@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "express.js": "^1.0.0"
+    "express.js": "^1.0.0",
+    "mysql": "^2.18.1"
   }
 }

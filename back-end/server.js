@@ -1,4 +1,5 @@
 let express = require("express");
+const mysql = require('mysql');
 let app = express();
 // let fs = require("fs");
 // let FileReader = require("filereader");
@@ -10,17 +11,17 @@ let app = express();
 let server = app.listen(4545, function () {
     let host = server.address().address;
     let port = server.address().port;
-  });
+  }); 
 
 app.use(express.json({ type: "application/json" }));
 app.use(express.urlencoded());
 
-// let con = mysql.createConnection({
-//   host: "72.182.161.176",
-//   user: "notepal",
-//   password: "ThetaTauUTDNotePal2023",
-//   database: "notepal",
-// });
+let con = mysql.createConnection({
+  host: "72.182.161.176",
+  user: "notepal",
+  password: "ThetaTauUTDNotePal2023",
+  database: "notepal",
+});
 
 con.connect(function (error) {
     if (error) {
@@ -30,6 +31,8 @@ con.connect(function (error) {
     }
   });
   
+
+
 app.get("/tag_names", function (req, res) {
     console.log("sql props");
     res.send("Hello World");
