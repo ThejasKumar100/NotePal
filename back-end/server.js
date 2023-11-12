@@ -1,12 +1,6 @@
 let express = require("express");
 const mysql = require('mysql');
 let app = express();
-// let fs = require("fs");
-// let FileReader = require("filereader");
-// let mysql = require("mysql");
-// let request = require("request-promise");
-// const axios = require("axios");
-// const { response } = require("express");
 
 let server = app.listen(4545, function () {
     let host = server.address().address;
@@ -29,25 +23,28 @@ con.connect(function (error) {
     } else {
       console.log("connection successful");
     }
-  });
+});
   
+function retrieveUploads(){
+    return new Promise((resolve, reject) =>{
+        con.query("SELECT * FROM tag_name", function (error, results, fields) {
+            if (error) reject(error);
+            else {
+                resolve(results);
+            }
+          });
+    })
+}
 
+app.get("/uploads", async function (req, res) {
+    let uploads = await retrieveUploads();
+    res.send(uploads);
+});
 
 app.get("/tag_names", function (req, res) {
-    console.log("sql props");
     res.send("Hello World");
-    // con.query("SELECT * FROM class", function (error, rows, fields) {
-    //     if (error) console.log(error);
-    //     else {
-    //       let array = rows;
-    //       for (var i in array) {
-    //         array[i].profile_image = fs.readFileSync(
-    //           array[i].profile_image,
-    //           "base64"
-    //         );
-    //       }
-    //       res.send(array);
-    //       // console.log(rows);
-    //     }
-    //   });
+  });
+
+  app.get("/class", function (req, res) {
+    res.send("Hello World");
   });
