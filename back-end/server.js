@@ -15,12 +15,12 @@ let server = app.listen(4545, function () {
 app.use(express.json({ type: "application/json" }));
 app.use(express.urlencoded());
 
-// let con = mysql.createConnection({
-//   host: "72.182.161.176",
-//   user: "notepal",
-//   password: "ThetaTauUTDNotePal2023",
-//   database: "notepal",
-// });
+let con = mysql.createConnection({
+  host: "72.182.161.176",
+  user: "notepal",
+  password: "ThetaTauUTDNotePal2023",
+  database: "notepal",
+});
 
 con.connect(function (error) {
     if (error) {
