@@ -36,13 +36,25 @@ function retrieveUploads(){
     })
 }
 
+function retrieveTagNames(){
+    return new Promise((res, rej) =>{
+        con.query("SELECT * FROM tag_name", function (error, results, fields) {
+            if (error) rej(error);
+            else {
+                res(results);
+            }
+          });
+    })
+}
+
 app.get("/uploads", async function (req, res) {
     let uploads = await retrieveUploads();
     res.send(uploads);
 });
 
-app.get("/tag_names", function (req, res) {
-    res.send("Hello World");
+app.get("/tag_names", async function (req, res) {
+    let tag_names = await retrieveTagNames();
+    res.send(tag_names);
   });
 
   app.get("/class", function (req, res) {
