@@ -36,6 +36,17 @@ function retrieveUploads(){
     })
 }
 
+function retrieveClasses(){
+  return new Promise((resolve, reject) =>{
+      con.query("SELECT * FROM class", function (error, results, fields) {
+          if (error) reject(error);
+          else {
+              resolve(results);
+          }
+        });
+  })
+}
+
 function retrieveTagNames(){
     return new Promise((res, rej) =>{
         con.query("SELECT * FROM tag_name", function (error, results, fields) {
@@ -57,6 +68,7 @@ app.get("/tag_names", async function (req, res) {
     res.send(tag_names);
   });
 
-  app.get("/class", function (req, res) {
-    res.send("Hello World");
+  app.get("/class", async function (req, res) {
+    let classes = await retrieveClasses();
+    res.send(classes);
   });
