@@ -51,8 +51,8 @@ retrieveSecrets().then((result) =>{
     clientID: secrets[5],
     clientSecret: secrets[6]
   });
-
-  client = sdk.getBasicClient('TtfLzUC6tlJC7vo9gu3Wr96z4eyYguZg');
+  //Developer Token
+  client = sdk.getBasicClient('J60ywiZoDPymwUvFIxuPFvOPAGykYLTi');
 })
 
 
@@ -108,8 +108,24 @@ app.get("/class", async function (req, res) {
     res.send(classes);
 });
 
+//NotePal Folder 240811112427
 app.get("/new", async function (req, res) {
-  client.users.get(client.CURRENT_USER_ID)
-	  .then(user => res.send('Hello ' + user.name + '!'))
-	  .catch(err => res.send('Got an error! ' + err));
+  var stream = fs.createReadStream('back-end/images/PumpingLema1031.png');
+  let folderID = '240811112427';
+  let tag_name = "Pumping Lemma"
+  let class_number = 4337;
+  let course_prefix = 'CS';
+  let instructor = 'Davis, Chris I; Sidheekh, Sahil; Rath, Avilash S';
+  let term = 'Spring 2023';
+  let section = 504;
+  client.files.uploadFile(folderID, 'PumpingLema1031.png', stream)
+	.then(file => {
+    con.query(`INSERT INTO uploads values((SELECT class_id FROM class WHERE class_number=${class_number} AND course_prefix='${course_prefix}' AND instructor='${instructor}' AND term='${term}' AND section=${section}), ${file.entries[0].id}, '${tag_name}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
+    `, function (error, results, fields) {
+      if (error) console.log(error);
+    });
+    res.send(file);
+  }).catch(err => {
+    res.send(err);
+  });
 });
