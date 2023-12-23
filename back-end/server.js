@@ -1,8 +1,11 @@
-let express = require("express");
+const express = require("express");
 const fs = require('node:fs');
-let app = express();
+const app = express();
 const mysql = require('mysql');
-let BoxSDK = require('box-node-sdk');
+const BoxSDK = require('box-node-sdk');
+const fileUpload = require('express-fileupload');
+const { Readable } = require("node:stream");
+const axios = require('axios');
 
 let secrets;
 function retrieveSecrets(){
@@ -52,12 +55,13 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('J60ywiZoDPymwUvFIxuPFvOPAGykYLTi');
+  client = sdk.getBasicClient('TKCFejBVIuFPVIR2Nsjj12mT49o3Lyie');
 })
 
 
 app.use(express.json({ type: "application/json" }));
 app.use(express.urlencoded());
+app.use(fileUpload());
 
 
 function retrieveUploads(){
@@ -108,24 +112,83 @@ app.get("/class", async function (req, res) {
     res.send(classes);
 });
 
+
+//Example get request that the front-end will have to use. (data in the Box is in UTF8 format as an ArrayBuffer data type, not sure how compatible ArrayBuffer is to Blob, which is the FrontEnd equivalent... may be a problem for displaying pictures down the line)
+app.get("/testNewUpload", async function (req, res) {
+  let fileName = 'back-end/images/PumpingLema1031.png';
+  let formData = new FormData();
+  fs.readFile(fileName, 'utf8', async function(err, image) {
+    if (err) res.send(err);
+    formData.append("name", "PumpingLema1031.png")
+    formData.append("file", image);
+    formData.append("tag_name1", "Pumping Lemma")
+    formData.append("tag_name2", "NULL")
+    formData.append("tag_name3", "NULL")
+    formData.append("tag_name4", "NULL")
+    formData.append("tag_name5", "NULL")
+    formData.append("tag_name6", "NULL")
+    formData.append("tag_name7", "NULL")
+    formData.append("tag_name8", "NULL")
+    formData.append("tag_name9", "NULL")
+    formData.append("tag_name10", "NULL")
+    formData.append("tag_name11", "NULL")
+    formData.append("tag_name12", "NULL")
+    formData.append("tag_name13", "NULL")
+    formData.append("tag_name14", "NULL")
+    formData.append("tag_name15", "NULL")
+    formData.append("class_number", "4337")
+    formData.append("course_prefix", "CS")
+    formData.append("instructor", "Davis, Chris I; Sidheekh, Sahil; Rath, Avilash S")
+    formData.append("term", "Spring 2023")
+    formData.append("section", "504")
+    let data = await axios.post('http://localhost:4545/newUpload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    res.send(data.data);
+  });
+});
+
 //NotePal Folder 240811112427
-app.get("/new", async function (req, res) {
-  var stream = fs.createReadStream('back-end/images/PumpingLema1031.png');
+app.post("/newUpload", async function (req, res) {
+  console.log("Request Received");
+
+  let sampleFile = req.body.file;
+  let fileName = req.body.name;
+
   let folderID = '240811112427';
-  let tag_name = "Pumping Lemma"
-  let class_number = 4337;
-  let course_prefix = 'CS';
-  let instructor = 'Davis, Chris I; Sidheekh, Sahil; Rath, Avilash S';
-  let term = 'Spring 2023';
-  let section = 504;
-  client.files.uploadFile(folderID, 'PumpingLema1031.png', stream)
+
+  let tag_name1 = '\'' + req.body.tag_name1 + '\'';
+  let tag_name2 = (req.body.tag_name2 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name2 + '\'');
+  let tag_name3 = (req.body.tag_name3 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name3 + '\'');
+  let tag_name4 = (req.body.tag_name4 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name4 + '\'');
+  let tag_name5 = (req.body.tag_name5 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name5 + '\'');
+  let tag_name6 = (req.body.tag_name6 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name6 + '\'');
+  let tag_name7 = (req.body.tag_name7 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name7 + '\'');
+  let tag_name8 = (req.body.tag_name8 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name8 + '\'');
+  let tag_name9 = (req.body.tag_name9 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name9 + '\'');
+  let tag_name10 = (req.body.tag_name10 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name10 + '\'');
+  let tag_name11 = (req.body.tag_name11 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name11 + '\'');
+  let tag_name12 = (req.body.tag_name12 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name12 + '\'');
+  let tag_name13 = (req.body.tag_name13 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name13 + '\'');
+  let tag_name14 = (req.body.tag_name14 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name14 + '\'');
+  let tag_name15 = (req.body.tag_name15 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name15 + '\'');
+  let class_number = req.body.class_number;
+  let course_prefix = req.body.course_prefix;
+  let instructor = req.body.instructor;
+  let term = req.body.term;
+  let section = req.body.section;
+
+  client.files.uploadFile(folderID, fileName, sampleFile)
 	.then(file => {
-    con.query(`INSERT INTO uploads values((SELECT class_id FROM class WHERE class_number=${class_number} AND course_prefix='${course_prefix}' AND instructor='${instructor}' AND term='${term}' AND section=${section}), ${file.entries[0].id}, '${tag_name}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
-    `, function (error, results, fields) {
+    con.query(`INSERT INTO uploads values((SELECT class_id FROM class WHERE class_number=${class_number} AND course_prefix='${course_prefix}' AND instructor='${instructor}' AND term='${term}' AND section=${section}), ${file.entries[0].id}, ${tag_name1}, ${tag_name2}, ${tag_name3}, ${tag_name4}, ${tag_name5}, ${tag_name6}, ${tag_name7}, ${tag_name8}, ${tag_name9}, ${tag_name10}, ${tag_name11}, ${tag_name12}, ${tag_name13}, ${tag_name14}, ${tag_name15} );`, function (error, results, fields) {
       if (error) console.log(error);
     });
-    res.send(file);
+    res.send("Successfully Received");
   }).catch(err => {
-    res.send(err);
+    console.log(err);
+    console.log("Error");
+    res.send("Error");
   });
 });
