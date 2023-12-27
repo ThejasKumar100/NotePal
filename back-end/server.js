@@ -58,7 +58,14 @@ retrieveSecrets().then((result) =>{
   client = sdk.getBasicClient('TKCFejBVIuFPVIR2Nsjj12mT49o3Lyie');
 })
 
+const cors=require("cors");
+const corsOptions ={
+   origin:'*', 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
 
+app.use(cors(corsOptions))
 app.use(express.json({ type: "application/json" }));
 app.use(express.urlencoded());
 app.use(fileUpload());
@@ -78,6 +85,17 @@ function retrieveUploads(){
 function retrieveClasses(){
   return new Promise((resolve, reject) =>{
       con.query("SELECT * FROM class", function (error, results, fields) {
+          if (error) reject(error);
+          else {
+              resolve(results);
+          }
+        });
+  })
+}
+
+function retrieveDistinctClasses(){
+  return new Promise((resolve, reject) =>{
+      con.query("SELECT DISTINCT course_prefix, class_number, instructor FROM class;", function (error, results, fields) {
           if (error) reject(error);
           else {
               resolve(results);
@@ -112,6 +130,24 @@ app.get("/class", async function (req, res) {
     res.send(classes);
 });
 
+app.get("/searchFormat", async function (req, res){
+  console.log("Data requested");
+  let tag_names = await retrieveTagNames();
+  let classes = await retrieveDistinctClasses();
+  let formattedClasses = [];
+  classes.forEach(element => {
+    let temp = {};
+    let string = [element.course_prefix, element.class_number, element.instructor];
+    temp["label"] = (string.join(" "));
+    formattedClasses.push(temp)
+  });
+  tag_names.forEach(element => {
+    let temp = {};
+    temp["label"] = element.tag_name;
+    formattedClasses.push(temp)
+  })
+  res.send(formattedClasses);
+})
 
 //Example get request that the front-end will have to use. (data in the Box is in UTF8 format as an ArrayBuffer data type, not sure how compatible ArrayBuffer is to Blob, which is the FrontEnd equivalent... may be a problem for displaying pictures down the line)
 app.get("/testNewUpload", async function (req, res) {
