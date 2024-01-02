@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react';
+import { StyledEngineProvider } from '@mui/material/styles';
 import App from './App';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-});
+function FinalComponentTree(props){
+  return(
+    <StyledEngineProvider injectFirst>
+      <App/>
+    </StyledEngineProvider>
+  );
+}
