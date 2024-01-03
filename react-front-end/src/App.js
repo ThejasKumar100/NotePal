@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper'
 import SearchIcon from '@mui/icons-material/Search';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const CustomPaper = ({children}) => {
   return(
@@ -26,6 +27,48 @@ const CustomPaper = ({children}) => {
     </Paper>
   );
 };
+
+function UploadInput(props) {
+  let inputRef = useRef();
+  const [options, setOptions] = useState([]);
+  useEffect(() => {
+    fetch(`http://localhost:4545/generalInformation/${props.url}`)
+    .then((response) => response.json())
+    .then((data) => {
+    console.log(data);
+    setOptions(data);
+  })
+  .catch(error => console.log(error))
+  }, [])
+  return(
+  <div className='inputContainer2'>
+    <div className="searchIconCont2" onClick={() => {inputRef.focus();console.log('clicked');}}>
+      <SearchIcon className='searchIcon2'/>
+    </div>
+    <Autocomplete
+      sx={{
+        '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+          padding: "0 0 0 0",
+      },
+        "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
+          border: "0",
+      },
+      "& .MuiOutlinedInput-root":{
+        padding: 0,
+    },
+      }}
+      className='input2'
+      freeSolo
+      // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
+      options={options}
+      // ref={inputRef}
+      renderInput={(params) => <TextField {...params} placeholder={props.placeholder} inputRef={input => {inputRef = input}}/>}
+      // ListboxProps={{background: 'black'}}
+      PaperComponent={CustomPaper}
+    />
+  </div>
+  );
+}
 
 function App() {
   let inputRef = useRef();
@@ -55,9 +98,9 @@ function App() {
         Your Professor Doesn't Need to Know
         </div>
         <div className='inputContainer'>
-            <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
-              <SearchIcon className='searchIcon'/>
-            </div>
+          <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
+            <SearchIcon className='searchIcon'/>
+          </div>
           <Autocomplete
             sx={{
               '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
@@ -92,149 +135,26 @@ function App() {
       {uploadButtonPressed ? 
       <div className="blackGlass" onClick={() => {setUploadButton(!uploadButtonPressed)}}>
         <div className="formContainer" onClick={(e) => {e.stopPropagation();}}>
-            <div className='xContainer'>
-
+          <div className="formHeader">
+            <div className="formHeaderTitle">
+                Note Upload
             </div>
-            <div className="Title">
-
+            <div className='xContainer' onClick={() => setUploadButton(!uploadButtonPressed)}>
+              <CloseRoundedIcon style={{fontSize:'42px', color:'#3B1910'}}/>
             </div>
-            <div className="uploadInformation">
-              <div className="uploadDropdowns">
-                <div className='inputContainer'>
-              <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
-                <SearchIcon className='searchIcon'/>
-              </div>
-            <Autocomplete
-              sx={{
-                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                  padding: "0 0 0 0",
-              },
-                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                  border: "0",
-              },
-              "& .MuiOutlinedInput-root":{
-                padding: 0,
-            },
-              }}
-              className='input'
-              freeSolo
-              // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
-              options={classes}
-              // ref={inputRef}
-              renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-              // ListboxProps={{background: 'black'}}
-              PaperComponent={CustomPaper}
-            />
-                </div>
-                <div className='inputContainer'>
-              <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
-                <SearchIcon className='searchIcon'/>
-              </div>
-            <Autocomplete
-              sx={{
-                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                  padding: "0 0 0 0",
-              },
-                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                  border: "0",
-              },
-              "& .MuiOutlinedInput-root":{
-                padding: 0,
-            },
-              }}
-              className='input'
-              freeSolo
-              // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
-              options={classes}
-              // ref={inputRef}
-              renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-              // ListboxProps={{background: 'black'}}
-              PaperComponent={CustomPaper}
-            />
-                </div>
-                <div className='inputContainer'>
-              <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
-                <SearchIcon className='searchIcon'/>
-              </div>
-            <Autocomplete
-              sx={{
-                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                  padding: "0 0 0 0",
-              },
-                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                  border: "0",
-              },
-              "& .MuiOutlinedInput-root":{
-                padding: 0,
-            },
-              }}
-              className='input'
-              freeSolo
-              // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
-              options={classes}
-              // ref={inputRef}
-              renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-              // ListboxProps={{background: 'black'}}
-              PaperComponent={CustomPaper}
-            />
-                </div>
-                <div className='inputContainer'>
-              <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
-                <SearchIcon className='searchIcon'/>
-              </div>
-            <Autocomplete
-              sx={{
-                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                  padding: "0 0 0 0",
-              },
-                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                  border: "0",
-              },
-              "& .MuiOutlinedInput-root":{
-                padding: 0,
-            },
-              }}
-              className='input'
-              freeSolo
-              // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
-              options={classes}
-              // ref={inputRef}
-              renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-              // ListboxProps={{background: 'black'}}
-              PaperComponent={CustomPaper}
-            />
-                </div>
-                <div className='inputContainer'>
-              <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
-                <SearchIcon className='searchIcon'/>
-              </div>
-            <Autocomplete
-              sx={{
-                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                  padding: "0 0 0 0",
-              },
-                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                  border: "0",
-              },
-              "& .MuiOutlinedInput-root":{
-                padding: 0,
-            },
-              }}
-              className='input'
-              freeSolo
-              // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
-              options={classes}
-              // ref={inputRef}
-              renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-              // ListboxProps={{background: 'black'}}
-              PaperComponent={CustomPaper}
-            />
-                </div>
-              </div>
-              <div className="fileDrop">
-
-              </div>
+          </div>
+          <div className="uploadInformation">
+            <div className="uploadCriteriaInput course_prefix"><UploadInput url={'course_prefix'} placeholder={"Course Prefix"}/></div>
+            <div className="uploadCriteriaInput class_number"><UploadInput url={'class_number'} placeholder={"Course Number"}/></div>
+            <div className="uploadCriteriaInput section"><UploadInput url={'section'} placeholder={"Section Number"}/></div>
+            <div className="uploadCriteriaInput instructor"><UploadInput url={'instructor'} placeholder={"Instructor(s)"}/></div>
+            <div className="uploadCriteriaInput term"><UploadInput url={'term'} placeholder={"Term"}/></div>
+            <div className="uploadCriteriaInput tags"><UploadInput url={'tags'} placeholder={"Tags separated by commas"}/></div>
+            <div className="fileDrop">
+              <input type='file'>
+              </input>
             </div>
+          </div>
         </div>
 
       </div>

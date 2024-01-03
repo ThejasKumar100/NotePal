@@ -1,7 +1,29 @@
+
+@font-face {
+  font-family: 'Lato';
+  src: url('./fonts/Lato-Regular.ttf');
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('./fonts/Lato-Bold.ttf');
+  font-weight: bold;
+}
+@font-face {
+  font-family: 'Oswald';
+  src: url('./fonts/Oswald-Regular.ttf');
+}
+@font-face {
+  font-family: 'Oswald';
+  src: url('./fonts/Oswald-Bold.ttf');
+  font-weight: bold;
+}
 *{
   --primary: #F8F6EA;
   --secondary: #C67143;
   --tertiary: #3B1910;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 *:focus {
   outline: none;
@@ -43,7 +65,9 @@
 .motto{
   animation-name: fade-in;
   animation-duration: 2s;
-  color: var(--tertiary)
+  font-family: 'Lato';
+  color: var(--tertiary);
+  font-size: 1.2rem;
 }
 .inputContainer{
   width: 50%;
@@ -55,7 +79,7 @@
   border-radius: 12px;
   border: 2px solid var(--secondary);
   flex-direction: row;
-  margin: 4%;
+  margin: 3.5%;
 }
 .searchIconCont{
   flex:1;
@@ -123,11 +147,11 @@
   align-items: center;
   justify-content: center;
   transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
-  
 }
 .uploadButton:hover{
   transform:scale(110%);
   box-shadow: 0 0 5px black;
+  cursor: pointer;
 }
 .blackGlass{
   background: rgba(0,0,0,0.8);
@@ -147,6 +171,120 @@
   width: 50%;
   background: var(--primary);
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.formHeader{
+  width: 100%;
+  flex: 1;
+  /* border: 1px solid red; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  font-family: "Oswald";
+  font-weight: bold;
+  font-size: 3rem;
+}
+.formHeaderTitle {
+  flex: 8;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 10px;
+  height: 100%;
+  color: var(--tertiary)
+}
+.xContainer{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+  flex: 1;
+  cursor: pointer;
+}
+.uploadInformation{
+  margin-left: 20px;
+  width: 100%;
+  flex: 4;
+  font-family: 'Ale';
+  /* border: 1px solid blue; */
+  display: grid;
+  grid-template-areas:
+    "input1 input4  filedrop"
+    "input2 input5  filedrop"
+    "input3 input6 filedrop";
+  align-items: center;
+  /* justify-content: center; */
+  gap: 0 20px;
+  grid-template-columns: 1fr 1fr 1.5fr;
+
+}
+.inputContainer2{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  height: fit-content;
+  border-radius: 12px;
+  border: 2px solid var(--secondary);
+  flex-direction: row;
+  margin: 4%;
+}
+.searchIconCont2{
+  flex:1;
+  height: 100%;
+  background-color: transparent;
+  display: flex;
+  padding-left: 5px;
+  padding-right: 5px;
+  align-items: center;
+  justify-content: center;
+}
+.searchIcon2{
+  color: var(--secondary);
+}
+.input2{
+  flex:12.5;
+  writing-mode: horizontal-tb;
+  height: 100%;
+  padding: 2px 0px 2px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.course_prefix{
+  grid-area: input1;
+}
+.course_number{
+  grid-area: input2;
+}
+.section{
+  grid-area: input3;
+}
+.instructor{
+  grid-area: input4;
+}
+.term{
+  grid-area: input5;
+}
+.tags{
+  grid-area: input6;
+}
+.fileDrop{
+  grid-area: filedrop;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fileUploadButton{
+  
 }
 
 @keyframes fade-in{
