@@ -73,7 +73,7 @@ app.use(fileUpload());
 
 function retrieveUploads(){
     return new Promise((resolve, reject) =>{
-        con.query("SELECT * FROM tag_name", function (error, results, fields) {
+        con.query("SELECT * FROM uploads", function (error, results, fields) {
             if (error) reject(error);
             else {
                 resolve(results);
@@ -85,6 +85,17 @@ function retrieveUploads(){
 function retrieveClasses(){
   return new Promise((resolve, reject) =>{
       con.query("SELECT * FROM class", function (error, results, fields) {
+          if (error) reject(error);
+          else {
+              resolve(results);
+          }
+        });
+  })
+}
+
+function retrieveClassInfo(string){
+  return new Promise((resolve, reject) =>{
+      con.query(`SELECT DISTINCT ${string} FROM class`, function (error, results, fields) {
           if (error) reject(error);
           else {
               resolve(results);
@@ -115,20 +126,39 @@ function retrieveTagNames(){
     })
 }
 
-app.get("/uploads", async function (req, res) {
-    let uploads = await retrieveUploads();
-    res.send(uploads);
-});
+app.get("/generalInformation/:filter", async function(req, res){
+  let data;
+  if(req.params.filter == "tags"){
+    data = await retrieveTagNames()
+  }
+  else{
+    data = await retrieveClassInfo(req.params.filter);
+  }
+  let formattedData = [];
+  data.forEach(element => {
+    let temp = {};
+    temp["label"] = element[Object.keys(element)[0]];
+    formattedData.push(temp);
+  });
+  res.send(formattedData);
+})
 
-app.get("/tag_names", async function (req, res) {
-    let tag_names = await retrieveTagNames();
-    res.send(tag_names);
-});
+// app.get("/uploads", async function (req, res) {
+//     let uploads = await retrieveUploads();
+//     res.send(uploads);
+// });
 
-app.get("/class", async function (req, res) {
-    let classes = await retrieveClasses();
-    res.send(classes);
-});
+// app.get("/uploadImages")
+
+// app.get("/tag_names", async function (req, res) {
+//     let tag_names = await retrieveTagNames();
+//     res.send(tag_names);
+// });
+
+// app.get("/class", async function (req, res) {
+//     let classes = await retrieveClasses();
+//     res.send(classes);
+// });
 
 app.get("/searchFormat", async function (req, res){
   console.log("Data requested");
