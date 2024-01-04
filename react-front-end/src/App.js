@@ -7,6 +7,8 @@ import Paper from '@mui/material/Paper'
 import SearchIcon from '@mui/icons-material/Search';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import ImageIcon from '@mui/icons-material/Image';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 const CustomPaper = ({children}) => {
   return(
@@ -39,7 +41,7 @@ function UploadInput(props) {
     setOptions(data);
   })
   .catch(error => console.log(error))
-  }, [])
+  }, [props.url])
   return(
   <div className='inputContainer2'>
     <div className="searchIconCont2" onClick={() => {inputRef.focus();console.log('clicked');}}>
@@ -72,6 +74,8 @@ function UploadInput(props) {
 
 function App() {
   let inputRef = useRef();
+  let uploadRef = useRef();
+  const [fileReceived, setFileReceived] = useState(false);
   const [uploadButtonPressed, setUploadButton] = useState(false);
   const [classes, setClasses] = useState([]);
   const [placeholder, setPlaceholder] = useState();
@@ -85,9 +89,20 @@ function App() {
   })
   .catch(error => console.log(error))
   }, [])
-  useEffect(() =>{
-    console.log(uploadButtonPressed)
-  }, [uploadButtonPressed])
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const {files} = e.dataTransfer;
+    if (files && files.length) {
+      console.log(files);
+      setFileReceived(true);
+    }
+  }
   return (
     <div className="app">
       <div className="container">
@@ -98,7 +113,7 @@ function App() {
         Your Professor Doesn't Need to Know
         </div>
         <div className='inputContainer'>
-          <div className="searchIconCont" onClick={() => {inputRef.focus();console.log('clicked');}}>
+          <div className="searchIconCont" onClick={() => {inputRef.focus();}}>
             <SearchIcon className='searchIcon'/>
           </div>
           <Autocomplete
@@ -140,7 +155,7 @@ function App() {
                 Note Upload
             </div>
             <div className='xContainer' onClick={() => setUploadButton(!uploadButtonPressed)}>
-              <CloseRoundedIcon style={{fontSize:'42px', color:'#3B1910'}}/>
+              <CloseRoundedIcon className='xIcon' style={{fontSize:'42px', color:'#3B1910'}}/>
             </div>
           </div>
           <div className="uploadInformation">
@@ -150,9 +165,17 @@ function App() {
             <div className="uploadCriteriaInput instructor"><UploadInput url={'instructor'} placeholder={"Instructor(s)"}/></div>
             <div className="uploadCriteriaInput term"><UploadInput url={'term'} placeholder={"Term"}/></div>
             <div className="uploadCriteriaInput tags"><UploadInput url={'tags'} placeholder={"Tags separated by commas"}/></div>
-            <div className="fileDrop">
-              <input type='file'>
-              </input>
+            <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
+              <input onInput={() => {setFileReceived(true);console.log("CHANGED")}} ref={input => uploadRef = input} hidden type='file'/>
+              <div className="callDrop">{fileReceived ? "Thank You!" : "Drop Files Here"}</div>
+              <div className="imageIconContainer">
+                {fileReceived ? 
+                  <CheckRoundedIcon style={{fontSize:'126px', color:'#3B1910'}}/>
+                  :
+                  <ImageIcon style={{fontSize:'126px', color:'#3B1910'}}/>
+                }
+              </div>
+              <div style={{opacity: fileReceived ? 0 : 1 }} className="inputButton" onClick={()=>{uploadRef.click()}}>Search for Notes</div>
             </div>
           </div>
         </div>
