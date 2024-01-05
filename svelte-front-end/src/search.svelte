@@ -6,12 +6,12 @@
 <style>
     .searchBox {
     display: flex;
-    max-width: 230px;
+    max-width: 40em;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 4em;
     background: #3a1910;
-    border-radius: 50px;
+    border-radius: 4em;
     position: relative;
     }
 
@@ -31,7 +31,8 @@
     /*hover effect*/
     button:hover {
     color: #fff;
-    background-color: #1A1A1A;
+    /* background-color: #1A1A1A; */
+    background-color: #c77142;
     box-shadow: rgba(0, 0, 0, 0.5) 0 10px 20px;
     transform: translateY(-3px);
     }
