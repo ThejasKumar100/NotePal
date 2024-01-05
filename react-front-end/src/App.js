@@ -143,7 +143,7 @@ function App() {
       <div className="credits">
         Made with the keyboards and mice of <b>ΘTA</b>, a UTD Professional Engineering Organization <br/>
         Powered by The Mercury <br/>
-        Built by Ashar, Alekhyaa, Thejas, Neel...
+        Built by the NotePal Team
       </div>
       <div className="uploadButton" onClick={() => {setUploadButton(!uploadButtonPressed)}}>
             <AddRoundedIcon style={{fontSize:'42px', color:'#3B1910'}}/>
