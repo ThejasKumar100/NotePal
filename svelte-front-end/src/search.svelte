@@ -4,6 +4,8 @@
 
 
 <style>
+    @import url('https://fonts.cdnfonts.com/css/stanley');
+
     .searchBox {
     display: flex;
     max-width: 40em;
@@ -47,8 +49,8 @@
     background: none;
     outline: none;
     color: white;
-    font-size: 15px;
-    padding: 24px 46px 24px 26px;
+    font-size: 1em;
+    padding: 1.5em 460px 24px 26px;
     }
 </style>
 
