@@ -1,5 +1,6 @@
 <script>
 	import SI from './socialInfo.svelte';
+	import SearchCom from './search.svelte';
 
 
 	let featherSrc = '/Feather.png';
@@ -8,7 +9,7 @@
 <style>
 	:global(body)
 	{
-		background-color: #f9f7e9;
+		background-color: #f9f7ea;
 	}
 
 </style>
@@ -17,5 +18,5 @@
 
 <!-- <input type = "text" value = "ex. <q>CS 3377<q> or <q>UNIX<q>" disabled> -->
 
-<SI>
-</SI>
+<SI></SI>
+<SearchCom></SearchCom>
