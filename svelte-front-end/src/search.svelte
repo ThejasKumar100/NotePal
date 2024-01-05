@@ -1,5 +1,5 @@
 <script>
-
+    let searchPrompt = "Enter a classcode or topic: ex.('CS 3377' or 'IAAS Databases')";
 </script>
 
 
@@ -54,7 +54,9 @@
         outline: none;
         color: white;
         font-size: 1em;
-        padding: 1.5em 460px 24px 26px;
+        /* padding: 1.5em 460px 24px 26px; */
+        /* padding: 1.5em 460px {Down} 26px; */
+        padding: 1.5em 20px 20px 20px;
     }
 </style>
 
@@ -65,7 +67,7 @@
         class="searchInput"
         type="text"
         name=""
-        placeholder = "Enter a classcode or topic: ex.('CS 3377' or 'IAAS Databases')"
+        placeholder = {searchPrompt}
     >
     <button
         class="searchButton"
