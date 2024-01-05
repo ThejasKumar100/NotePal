@@ -147,11 +147,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transition: all 0.5s ease;
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  border: 2px solid var(--secondary);
 }
 .uploadButton:hover{
-  background-color: rgba(198,113,67, 0.8);
+  border: 2px solid var(--tertiary);
+  background: var(--primary);
   cursor: pointer;
 }
 .blackGlass{
@@ -240,7 +242,7 @@
   border-radius: 16px;
   border: 2px solid var(--secondary);
   flex-direction: row;
-  margin: 4%;
+  /* margin: 4%; */
 }
 .searchIconCont2{
   flex:1;
@@ -267,7 +269,7 @@
 .course_prefix{
   grid-area: input1;
 }
-.course_number{
+.class_number{
   grid-area: input2;
 }
 .section{
@@ -281,6 +283,30 @@
 }
 .tags{
   grid-area: input6;
+}
+.submit{
+  grid-area: submit;
+  /* height: 100%;
+  width: 100%; */
+  width: fit-content;
+  background: var(--secondary);
+  padding: 5px 10%;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+  font-family: 'Lato';
+  /* margin-top: 10%; */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  border: 2px solid var(--secondary);
+  justify-self: center;
+}
+.submit:hover{
+  /* box-shadow: 0 0 5px black; */
+  border: 2px solid var(--tertiary);
+  background-color: var(--primary);
+  cursor: pointer;
 }
 .fileDrop{
   grid-area: filedrop;
@@ -296,6 +322,9 @@
   justify-self: center;
   align-self: center;
   flex-direction: column;
+  overflow: hidden;
+  padding: 1%;
+
 }
 .callDrop{
   display: flex;
@@ -330,12 +359,19 @@
   font-family: 'Lato';
   /* margin-top: 10%; */
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  border: 2px solid var(--secondary);
 }
 .inputButton:hover{
   /* box-shadow: 0 0 5px black; */
-  /* transform:scale(102%); */
-  background-color: rgba(198,113,67, 0.8);
+  border: 2px solid var(--tertiary);
+  background-color: var(--primary);
   cursor: pointer;
+}
+.previewImage{
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 5%;
 }
 
 @keyframes fade-in{

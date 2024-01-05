@@ -106,7 +106,7 @@ function retrieveClassInfo(string){
 
 function retrieveDistinctClasses(){
   return new Promise((resolve, reject) =>{
-      con.query("SELECT DISTINCT course_prefix, class_number, instructor FROM class;", function (error, results, fields) {
+      con.query("SELECT DISTINCT course_prefix, class_number, instructor FROM class ORDER BY term;", function (error, results, fields) {
           if (error) reject(error);
           else {
               resolve(results);
@@ -137,6 +137,9 @@ app.get("/generalInformation/:filter", async function(req, res){
   let formattedData = [];
   data.forEach(element => {
     let temp = {};
+    if (element[Object.keys(element)[0]] == null){
+      return;
+    }
     temp["label"] = element[Object.keys(element)[0]];
     formattedData.push(temp);
   });

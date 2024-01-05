@@ -8,7 +8,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ImageIcon from '@mui/icons-material/Image';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 const CustomPaper = ({children}) => {
   return(
@@ -75,6 +74,7 @@ function UploadInput(props) {
 function App() {
   let inputRef = useRef();
   let uploadRef = useRef();
+  const [file, setFile] = useState();
   const [fileReceived, setFileReceived] = useState(false);
   const [uploadButtonPressed, setUploadButton] = useState(false);
   const [classes, setClasses] = useState([]);
@@ -101,6 +101,7 @@ function App() {
     if (files && files.length) {
       console.log(files);
       setFileReceived(true);
+      setFile(URL.createObjectURL(files[0]))
     }
   }
   return (
@@ -142,7 +143,7 @@ function App() {
       <div className="credits">
         Made with the keyboards and mice of <b>ΘTA</b>, a UTD Professional Engineering Organization <br/>
         Powered by The Mercury <br/>
-        Built by Ashar Alvany, Thejas Kumar, Neel Neupane, ...
+        Built by the NotePal Team
       </div>
       <div className="uploadButton" onClick={() => {setUploadButton(!uploadButtonPressed)}}>
             <AddRoundedIcon style={{fontSize:'42px', color:'#3B1910'}}/>
@@ -165,18 +166,22 @@ function App() {
             <div className="uploadCriteriaInput instructor"><UploadInput url={'instructor'} placeholder={"Instructor(s)"}/></div>
             <div className="uploadCriteriaInput term"><UploadInput url={'term'} placeholder={"Term"}/></div>
             <div className="uploadCriteriaInput tags"><UploadInput url={'tags'} placeholder={"Tags separated by commas"}/></div>
-            <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
-              <input onInput={() => {setFileReceived(true);console.log("CHANGED")}} ref={input => uploadRef = input} hidden type='file'/>
-              <div className="callDrop">{fileReceived ? "Thank You!" : "Drop Files Here"}</div>
-              <div className="imageIconContainer">
-                {fileReceived ? 
-                  <CheckRoundedIcon style={{fontSize:'126px', color:'#3B1910'}}/>
-                  :
-                  <ImageIcon style={{fontSize:'126px', color:'#3B1910'}}/>
-                }
+            <div className="submit">Upload!</div>
+              {/*This next portion will probably need to be changed to accept multiple files but for now the logic only permits the storage of one file at a time. The SQL database depends on their only being one file. We may have to have the backend collate the files or ask the user to do it instead. For now the path is to force the user to collate it themselves. */}
+              {fileReceived ?
+              <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
+                <img className="previewImage" alt="" src={file}/>
               </div>
-              <div style={{opacity: fileReceived ? 0 : 1 }} className="inputButton" onClick={()=>{uploadRef.click()}}>Search for Notes</div>
-            </div>
+              : 
+              <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
+                <input onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));;}} ref={input => uploadRef = input} hidden type='file'/>
+                <div className="callDrop">Drop Files Here</div>
+                <div className="imageIconContainer">
+                    <ImageIcon style={{fontSize:'126px', color:'#3B1910'}}/>
+                </div>
+                <div className="inputButton" onClick={()=>{uploadRef.click()}}>Search for Notes</div>
+              </div>
+              }
           </div>
         </div>
 
