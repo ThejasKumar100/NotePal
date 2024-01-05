@@ -65,7 +65,7 @@
         class="searchInput"
         type="text"
         name=""
-        placeholder="Search something"
+        placeholder = "Enter a classcode or topic: ex.('CS 3377' or 'IAAS Databases')"
     >
     <button
         class="searchButton"
