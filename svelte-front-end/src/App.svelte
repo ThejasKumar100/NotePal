@@ -27,11 +27,11 @@
 	}
 
 	.titleLoc {
-		font-family: 'Stanley', sans-serif;
-		font-size: 2em;
+		font-family: 'Futura Std', sans-serif;
+		font-size: 1.2em;
 		color: #3a1910;
 		text-align: center;
-		margin-top: 1em;
+		margin-top: -2em;
 		margin-bottom: -1em;
 	}
 
@@ -41,12 +41,19 @@
 	<img src = {featherSrc} width = "120em" alt = "NotePal Feather Logo">
 </div>
 
-<div class = "titleLoc">
+<!-- <div class = "titleLoc">
 	<link href="https://fonts.cdnfonts.com/css/stanley" rel="stylesheet">
-	<h1>
+	<h1 style = 
+		"font-family: 'Stanley', sans-serif;
+		font-size: 2em;
+		color: #3a1910;
+		text-align: center;
+		margin-top: 1em;
+		margin-bottom: -1em;"
+	>
 		NotePal
 	</h1>
-</div>
+</div> -->
 
 
 <!-- <link href="https://fonts.cdnfonts.com/css/ceuretas" rel="stylesheet">
@@ -54,10 +61,12 @@
 	NotePal
 </h1> -->
 
-<!-- <link href="https://fonts.cdnfonts.com/css/futura-std-4" rel="stylesheet">
-<h1 style = "font-family: 'Futura Std', sans-serif; font-size: 2.5em; color: #3a1910; text-align: center; margin-top: 1em;">
-	NotePal
-</h1> -->
+<div class = titleLoc>
+	<link href="https://fonts.cdnfonts.com/css/futura-std-4" rel="stylesheet">
+	<h1 style = "font-family: 'Futura Std', sans-serif; font-size: 2.5em; color: #3a1910; text-align: center; margin-top: 1em;">
+		NotePal
+	</h1>
+</div>
 
 
 
