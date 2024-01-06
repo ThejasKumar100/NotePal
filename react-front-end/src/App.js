@@ -75,6 +75,12 @@ function App() {
   let inputRef = useRef();
   let uploadRef = useRef();
   const [file, setFile] = useState();
+  const [coursePrefix, setCoursePrefix] = useState()
+  const [classNumber, setClassNumber] = useState()
+  const [section, setSection] = useState()
+  const [instructor, setInstructor] = useState()
+  const [term, setTerm] = useState()
+  const [tags, setTags] = useState()
   const [fileReceived, setFileReceived] = useState(false);
   const [uploadButtonPressed, setUploadButton] = useState(false);
   const [classes, setClasses] = useState([]);

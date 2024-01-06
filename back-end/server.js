@@ -128,8 +128,10 @@ function retrieveTagNames(){
 
 app.get("/generalInformation/:filter", async function(req, res){
   let data;
+  let isTag = false;
   if(req.params.filter == "tags"){
     data = await retrieveTagNames()
+    isTag = true;
   }
   else{
     data = await retrieveClassInfo(req.params.filter);
@@ -138,30 +140,13 @@ app.get("/generalInformation/:filter", async function(req, res){
   data.forEach(element => {
     let temp = {};
     if (element[Object.keys(element)[0]] == null){
-      return;
+      temp["label"] = "NULL";
     }
-    temp["label"] = element[Object.keys(element)[0]];
+    temp["label"] = (isTag ? "#": "") + element[Object.keys(element)[0]];
     formattedData.push(temp);
   });
   res.send(formattedData);
 })
-
-// app.get("/uploads", async function (req, res) {
-//     let uploads = await retrieveUploads();
-//     res.send(uploads);
-// });
-
-// app.get("/uploadImages")
-
-// app.get("/tag_names", async function (req, res) {
-//     let tag_names = await retrieveTagNames();
-//     res.send(tag_names);
-// });
-
-// app.get("/class", async function (req, res) {
-//     let classes = await retrieveClasses();
-//     res.send(classes);
-// });
 
 app.get("/searchFormat", async function (req, res){
   console.log("Data requested");
@@ -176,7 +161,7 @@ app.get("/searchFormat", async function (req, res){
   });
   tag_names.forEach(element => {
     let temp = {};
-    temp["label"] = element.tag_name;
+    temp["label"] = "#" + element.tag_name;
     formattedClasses.push(temp)
   })
   res.send(formattedClasses);
