@@ -1,9 +1,8 @@
 <!-- Origin Page -->
 
 <script>
-	// import SI from './socialInfo.svelte';
-	// import Home from './home.svelte';
-	// import SearchCom from './search.svelte';
+	import SI from './homePG/socialInfo.svelte';
+	import Home from './homePG/home.svelte';
 </script>
 
 <style>
@@ -19,4 +18,4 @@
 
 
 <!-- <SI></SI> -->
-<!-- <Home></Home> -->
+<Home></Home>
