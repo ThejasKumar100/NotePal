@@ -15,7 +15,7 @@
 		align-items: center; 
 		/* margin: auto; */
 		/* height: 100vh; */
-		margin-top: 7em;
+		margin-top: 9em;
 		margin-bottom: -1.8em;
 	}
 

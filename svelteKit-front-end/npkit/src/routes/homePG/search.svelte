@@ -58,7 +58,7 @@
         font-size: 1em;
         /* padding: 1.5em 460px 24px 26px; */
         /* padding: {Space above the element} {} {Down} 26px; */
-        padding: 1.5em 22em 20px 20px;
+        padding: 1.2em 22em 20px 20px;
     }
 </style>
 
