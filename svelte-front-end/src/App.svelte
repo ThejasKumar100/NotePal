@@ -17,4 +17,10 @@
 
 
 <!-- <SI></SI> -->
-<Home></Home>
+<Home>
+	<div>
+		<h1> Recently Viewed: </h1>
+		<br>
+		<h1> Favorites: </h1>
+	</div>
+</Home>

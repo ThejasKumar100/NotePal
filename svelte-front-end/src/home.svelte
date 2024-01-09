@@ -5,6 +5,7 @@
 </script>
 
 
+
 <style>
 
     @import url('https://fonts.cdnfonts.com/css/stanley');
@@ -29,6 +30,7 @@
 		margin-top: -2em;
 		margin-bottom: -1em;
 	}
+	h1 {text-align: center;}
 
 </style>
 
@@ -65,3 +67,9 @@
 </div>
 
 <SearchCom></SearchCom>
+
+<div>
+	<h1> Recently Viewed: </h1>
+	<br>
+	<h1> Favorites: </h1>
+</div>
