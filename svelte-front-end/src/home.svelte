@@ -1,5 +1,6 @@
 <script>
    	import SearchCom from './search.svelte';
+	import TopBar from './TopBar.svelte';
 
     let featherSrc = '/Feather.png';
 </script>
@@ -34,6 +35,7 @@
 
 </style>
 
+<TopBar></TopBar>
 
 <div class = "featherLoc">
 	<img src = {featherSrc} width = "120em" alt = "NotePal Feather Logo">
