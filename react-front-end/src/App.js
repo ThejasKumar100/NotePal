@@ -11,14 +11,9 @@ import ImageIcon from '@mui/icons-material/Image';
 
 const CustomPaper = ({children}) => {
   return(
-    <Paper className="paper"  sx={{
+    <Paper className="paper"  style={{background:"#F8F6EA", border:"2px #C67143 solid", boxShadow: "0px 0px 5px rgba(198,113,67, 0.8)"}} sx={{
       "& ::-webkit-scrollbar": {
         display: 'none'
-      },
-      "& .MuiAutocomplete-listbox": {
-        background: "#F8F6EA",
-        border: "2px #C67143 solid",
-        boxShadow: "0px 0px 5px rgba(198,113,67, 0.8)",
       },
       "& .MuiAutocomplete-listbox .MuiAutocomplete-option.Mui-focused": {
         background: "#C67143",
@@ -42,11 +37,23 @@ function UploadInput(props) {
   .catch(error => console.log(error))
   }, [props.url])
   return(
-  <div className='inputContainer2'>
+  <div className='inputContainer2' >
     <div className="searchIconCont2" onClick={() => {inputRef.focus();console.log('clicked');}}>
       <SearchIcon className='searchIcon2'/>
     </div>
     <Autocomplete
+      onChange={(e, v)=>{
+        // props.url === "tags" ?
+        props.setContent(JSON.stringify(v))
+        // :
+        // props.setContent(JSON.stringify(v["label"]))
+      }}
+      limitTags={0}
+      disabled={props.disabled ? true : null}
+      getLimitTagsText={(more) => `...${more}`}
+      disablePortal
+      multiple={props.url === "tags" ? true : null}
+      freeSolo={props.url === "tags" ? true : null}
       sx={{
         '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
           padding: "0 0 0 0",
@@ -59,7 +66,6 @@ function UploadInput(props) {
     },
       }}
       className='input2'
-      freeSolo
       // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
       options={options}
       // ref={inputRef}
@@ -75,6 +81,7 @@ function App() {
   let inputRef = useRef();
   let uploadRef = useRef();
   const [file, setFile] = useState();
+  const [rawFile, setRawFile] = useState();
   const [coursePrefix, setCoursePrefix] = useState()
   const [classNumber, setClassNumber] = useState()
   const [section, setSection] = useState()
@@ -108,7 +115,17 @@ function App() {
       console.log(files);
       setFileReceived(true);
       setFile(URL.createObjectURL(files[0]))
+      setRawFile(files[0]);
     }
+  }
+  let uploadInfo = () =>{
+    var data = new FormData()
+    data.append('file', rawFile)
+    fetch(`http://localhost:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor};${term};${tags}`, {
+      method: 'POST',
+      body: data
+    });
+    console.log(`http://localhost:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
   }
   return (
     <div className="app">
@@ -166,13 +183,13 @@ function App() {
             </div>
           </div>
           <div className="uploadInformation">
-            <div className="uploadCriteriaInput course_prefix"><UploadInput url={'course_prefix'} placeholder={"Course Prefix"}/></div>
-            <div className="uploadCriteriaInput class_number"><UploadInput url={'class_number'} placeholder={"Course Number"}/></div>
-            <div className="uploadCriteriaInput section"><UploadInput url={'section'} placeholder={"Section Number"}/></div>
-            <div className="uploadCriteriaInput instructor"><UploadInput url={'instructor'} placeholder={"Instructor(s)"}/></div>
-            <div className="uploadCriteriaInput term"><UploadInput url={'term'} placeholder={"Term"}/></div>
-            <div className="uploadCriteriaInput tags"><UploadInput url={'tags'} placeholder={"Tags separated by commas"}/></div>
-            <div className="submit">Upload!</div>
+            <div className="uploadCriteriaInput course_prefix"><UploadInput setContent={setCoursePrefix} url={'course_prefix'} placeholder={"Course Prefix"}/></div>
+            <div className="uploadCriteriaInput class_number"><UploadInput clearValue={coursePrefix == null ? true : false} disabled={coursePrefix == null ? true : false} setContent={setClassNumber} url={'class_number'} placeholder={"Course Number"}/></div>
+            <div className="uploadCriteriaInput section"><UploadInput disabled={coursePrefix == null || classNumber == null ? true : false} setContent={setSection} url={'section'} placeholder={"Section Number"}/></div>
+            <div className="uploadCriteriaInput instructor"><UploadInput setContent={setInstructor} url={'instructor'} placeholder={"Instructor(s)"}/></div>
+            <div className="uploadCriteriaInput term"><UploadInput disabled={coursePrefix == null || classNumber == null || section == null ? true : false} setContent={setTerm} url={'term'} placeholder={"Term"}/></div>
+            <div className="uploadCriteriaInput tags"><UploadInput setContent={setTags} url={'tags'} placeholder={"Tags"}/></div>
+            <div onClick={uploadInfo} className="submit">Upload!</div>
               {/*This next portion will probably need to be changed to accept multiple files but for now the logic only permits the storage of one file at a time. The SQL database depends on their only being one file. We may have to have the backend collate the files or ask the user to do it instead. For now the path is to force the user to collate it themselves. */}
               {fileReceived ?
               <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
@@ -180,7 +197,7 @@ function App() {
               </div>
               : 
               <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
-                <input onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));;}} ref={input => uploadRef = input} hidden type='file'/>
+                <input onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);}} ref={input => uploadRef = input} hidden type='file'/>
                 <div className="callDrop">Drop Files Here</div>
                 <div className="imageIconContainer">
                     <ImageIcon style={{fontSize:'126px', color:'#3B1910'}}/>

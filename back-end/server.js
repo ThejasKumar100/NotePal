@@ -55,10 +55,11 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('TKCFejBVIuFPVIR2Nsjj12mT49o3Lyie');
+  client = sdk.getBasicClient('lNxyiyrGQw0BqEvs4lNXPHDFvNkK2umC');
 })
 
 const cors=require("cors");
+const { type } = require("node:os");
 const corsOptions ={
    origin:'*', 
    credentials:true,            //access-control-allow-credentials:true
@@ -82,14 +83,36 @@ function retrieveUploads(){
     })
 }
 
-function retrieveClasses(){
+function updateTags(tagName){
   return new Promise((resolve, reject) =>{
-      con.query("SELECT * FROM class", function (error, results, fields) {
+      con.query(`INSERT INTO tag_name VALUES ('${tagName}');`, function (error, results, fields) {
           if (error) reject(error);
           else {
               resolve(results);
           }
         });
+  })
+}
+
+function SQLequivalenceFormat(value){
+  if (value === "undefined"){
+    return "IS NULL";
+  }
+  else{
+    return `= '${value}'`
+  }
+}
+
+function checkExistence(coursePrefix, classNumber, section, instructor){
+  return new Promise((resolve, reject) =>{
+    let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND section ${SQLequivalenceFormat(section)} AND instructor ${SQLequivalenceFormat(instructor)}`;
+    console.log(SQLquery);
+    con.query(SQLquery, function (error, results, fields) {
+        if (error) reject(error);
+        else {
+            resolve(results);
+        }
+      });
   })
 }
 
@@ -126,12 +149,60 @@ function retrieveTagNames(){
     })
 }
 
+app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async function(req, res){
+  // Will show as undefined if unavailable
+  // console.log(req.params.coursePrefix, req.params.classNumber, req.params.section, req.params.instructor);
+  // let coursePrefix = req.params.coursePrefix === "undefined" || req.params.coursePrefix === "null" ? "undefined" : JSON.parse(req.params.coursePrefix)["label"];
+  // let classNumber = req.params.classNumber === "undefined" || req.params.classNumber === "null" ? "undefined" : JSON.parse(req.params.classNumber)["label"];
+  // let section = req.params.section === "undefined" || req.params.section === "null" ? "undefined" : JSON.parse(req.params.section)["label"];
+  // let instructor = req.params.instructor === "undefined" || req.params.instructor === "null" ? "undefined" : JSON.parse(req.params.instructor)["label"];
+  // let term = req.params.term === "undefined" || req.params.term === "null" ? "undefined" : JSON.parse(req.params.term)["label"];
+  // let tags = req.params.tags === "undefined" || req.params.tags === "null" ? "undefined" : JSON.parse(req.params.tags);
+  // if(tags === "undefined"){
+  //   res.send("NO TAGS");
+  // }
+  // else{
+  //   let currentTags = await retrieveTagNames();
+  //   tags.forEach((element) =>{
+  //     if(typeof element === "string" && !currentTags.includes(element.toLowerCase())){
+  //       updateTags(element);
+  //     }
+  //   })
+  //   for(let i = 0; i < tags.length; i++){
+  //     tags[i]= tags[i]["label"];
+  //   }
+  //   console.log(tags)
+  //   checkExistence(coursePrefix, classNumber, section, instructor).then((results) =>{
+  //     class_id = results[0].class_id;
+  //     console.log(class_id)
+  //     res.send("SUCCESS");
+  //   })
+  //   .catch((error) =>{
+  //     console.log(error);
+  //     res.send("ERROR");
+  //   })
+  // }
+  let fileName = req.files.file.name;
+  let file = req.files.file.data.toString('utf8')
+  client.files.uploadFile('240811112427', fileName, file)
+  res.send("RECEIVED");
+});
+
+app.get("/addUpload/:uploadNames", async function(req, res){
+  let currentTags = retrieveTagNames();
+  let sentTags = req.params.uploadNames;
+  sentTags.forEach((element) =>{
+    if(typeof element === "string" && !currentTags.includes(element.toLowerCase())){
+      updateTags(element);
+    }
+  })
+  res.send('Complete');
+});
+
 app.get("/generalInformation/:filter", async function(req, res){
   let data;
-  let isTag = false;
   if(req.params.filter == "tags"){
     data = await retrieveTagNames()
-    isTag = true;
   }
   else{
     data = await retrieveClassInfo(req.params.filter);
@@ -140,9 +211,9 @@ app.get("/generalInformation/:filter", async function(req, res){
   data.forEach(element => {
     let temp = {};
     if (element[Object.keys(element)[0]] == null){
-      temp["label"] = "NULL";
+      return;
     }
-    temp["label"] = (isTag ? "#": "") + element[Object.keys(element)[0]];
+    temp["label"] = element[Object.keys(element)[0]];
     formattedData.push(temp);
   });
   res.send(formattedData);
@@ -161,7 +232,7 @@ app.get("/searchFormat", async function (req, res){
   });
   tag_names.forEach(element => {
     let temp = {};
-    temp["label"] = "#" + element.tag_name;
+    temp["label"] = element.tag_name;
     formattedClasses.push(temp)
   })
   res.send(formattedClasses);
