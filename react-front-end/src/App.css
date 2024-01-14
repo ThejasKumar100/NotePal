@@ -373,6 +373,25 @@
   object-fit: contain;
   border-radius: 5%;
 }
+.notif{
+  position: absolute;
+  height: 4%;
+  opacity: 0;
+  width: fit-content;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+  font-family: 'Lato';
+  background: black;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding-left: 3%;
+  padding-right: 3%;
+}
 
 @keyframes fade-in{
   from {
@@ -381,5 +400,13 @@
 
   to {
     opacity: 1;
+  }
+}
+@keyframes from-top{
+  from {
+    top: 5%;
+  }
+  to {
+    top: -5%;
   }
 }

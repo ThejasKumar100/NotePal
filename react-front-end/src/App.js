@@ -8,6 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ImageIcon from '@mui/icons-material/Image';
+import { motion } from 'framer-motion'
 
 const CustomPaper = ({children}) => {
   return(
@@ -42,11 +43,10 @@ function UploadInput(props) {
       <SearchIcon className='searchIcon2'/>
     </div>
     <Autocomplete
+      key={props.rerender}
+      value={props.content}
       onChange={(e, v)=>{
-        // props.url === "tags" ?
         props.setContent(JSON.stringify(v))
-        // :
-        // props.setContent(JSON.stringify(v["label"]))
       }}
       limitTags={0}
       disabled={props.disabled ? true : null}
@@ -80,6 +80,9 @@ function UploadInput(props) {
 function App() {
   let inputRef = useRef();
   let uploadRef = useRef();
+  const [rerender, setRerender] = useState(false);
+  const [messageValue, setMessageValue] = useState();
+  const [notification, setNotification] = useState(false);
   const [file, setFile] = useState();
   const [rawFile, setRawFile] = useState();
   const [coursePrefix, setCoursePrefix] = useState()
@@ -96,12 +99,16 @@ function App() {
     fetch('http://localhost:4545/searchFormat')
     .then((response) => response.json())
     .then((data) => {
-    console.log(data);
-    setClasses(data);
-    setPlaceholder(data[Math.floor(Math.random()* data.length)]['label'])
-  })
-  .catch(error => console.log(error))
+      console.log(data);
+      setClasses(data);
+      setPlaceholder(data[Math.floor(Math.random()* data.length)]['label'])
+    })
+    .catch(error => console.log(error))
   }, [])
+  // useEffect(() =>{
+  //   setTimeout(()=>{
+  //   }, 4000)
+  // }, [notification])
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -118,14 +125,35 @@ function App() {
       setRawFile(files[0]);
     }
   }
+  let clearForm = () =>{
+    setCoursePrefix();
+    setClassNumber();
+    setSection();
+    setInstructor();
+    setTerm();
+    setTags();
+    setRawFile();
+    setFile();
+    setFileReceived(false);
+    setRerender(!rerender);
+  }
   let uploadInfo = () =>{
     var data = new FormData()
     data.append('file', rawFile)
     fetch(`http://localhost:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor};${term};${tags}`, {
       method: 'POST',
       body: data
-    });
-    console.log(`http://localhost:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
+    }).then((response) =>{
+      return response.json();
+    }).then((data) =>{
+      setNotification(true);
+      setMessageValue(data);
+      if(data === "SUCCESS"){
+        clearForm();
+      }
+    }).catch((error) =>{
+      console.log(`http://localhost:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
+    })
   }
   return (
     <div className="app">
@@ -183,12 +211,12 @@ function App() {
             </div>
           </div>
           <div className="uploadInformation">
-            <div className="uploadCriteriaInput course_prefix"><UploadInput setContent={setCoursePrefix} url={'course_prefix'} placeholder={"Course Prefix"}/></div>
-            <div className="uploadCriteriaInput class_number"><UploadInput clearValue={coursePrefix == null ? true : false} disabled={coursePrefix == null ? true : false} setContent={setClassNumber} url={'class_number'} placeholder={"Course Number"}/></div>
-            <div className="uploadCriteriaInput section"><UploadInput disabled={coursePrefix == null || classNumber == null ? true : false} setContent={setSection} url={'section'} placeholder={"Section Number"}/></div>
-            <div className="uploadCriteriaInput instructor"><UploadInput setContent={setInstructor} url={'instructor'} placeholder={"Instructor(s)"}/></div>
-            <div className="uploadCriteriaInput term"><UploadInput disabled={coursePrefix == null || classNumber == null || section == null ? true : false} setContent={setTerm} url={'term'} placeholder={"Term"}/></div>
-            <div className="uploadCriteriaInput tags"><UploadInput setContent={setTags} url={'tags'} placeholder={"Tags"}/></div>
+            <div className="uploadCriteriaInput course_prefix"><UploadInput content={coursePrefix} setContent={setCoursePrefix} rerender={rerender} url={'course_prefix'} placeholder={"Course Prefix"}/></div>
+            <div className="uploadCriteriaInput class_number"><UploadInput clearValue={coursePrefix == null ? true : false} disabled={coursePrefix == null ? true : false} content={classNumber} setContent={setClassNumber} rerender={rerender} url={'class_number'} placeholder={"Course Number"}/></div>
+            <div className="uploadCriteriaInput section"><UploadInput disabled={coursePrefix == null || classNumber == null ? true : false} content={section} setContent={setSection} rerender={rerender} url={'section'} placeholder={"Section Number"}/></div>
+            <div className="uploadCriteriaInput instructor"><UploadInput content={instructor} setContent={setInstructor} rerender={rerender} url={'instructor'} placeholder={"Instructor(s)"}/></div>
+            <div className="uploadCriteriaInput term"><UploadInput disabled={coursePrefix == null || classNumber == null || section == null ? true : false} content={term} setContent={setTerm} rerender={rerender} url={'term'} placeholder={"Term"}/></div>
+            <div className="uploadCriteriaInput tags"><UploadInput content={tags} setContent={setTags} rerender={rerender} url={'tags'} placeholder={"Tags"}/></div>
             <div onClick={uploadInfo} className="submit">Upload!</div>
               {/*This next portion will probably need to be changed to accept multiple files but for now the logic only permits the storage of one file at a time. The SQL database depends on their only being one file. We may have to have the backend collate the files or ask the user to do it instead. For now the path is to force the user to collate it themselves. */}
               {fileReceived ?
@@ -204,6 +232,14 @@ function App() {
                 </div>
                 <div className="inputButton" onClick={()=>{uploadRef.click()}}>Search for Notes</div>
               </div>
+              }
+              {
+                notification ?
+                <motion.div animate={{opacity: [0, 1, 1, 0], top: ["-5%", "5%", "5%", "-5%"]}} transition={{duration: 4, times: [0, 0.2, 0.8, 1], ease: ["easeIn", "easeIn", "easeOut"]}} onAnimationComplete={() => setNotification(false)} className="notif">
+                    {messageValue === "SUCCESS" ? "Successfully Uploaded!" : "An Error Occurred!"}
+                </motion.div>
+                :
+                null
               }
           </div>
         </div>
