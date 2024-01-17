@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState, useEffect, useRef } from 'react';
 import logo from './notepal_logo.png'
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper'
 import SearchIcon from '@mui/icons-material/Search';
@@ -10,9 +10,14 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ImageIcon from '@mui/icons-material/Image';
 import { motion } from 'framer-motion'
 
+const filterOptions = createFilterOptions({
+  matchFrom: 'any',
+  limit: 150,
+});
+
 const CustomPaper = ({children}) => {
   return(
-    <Paper className="paper"  style={{background:"#F8F6EA", border:"2px #C67143 solid", boxShadow: "0px 0px 5px rgba(198,113,67, 0.8)"}} sx={{
+    <Paper className="paper"  style={{background:"#FCE8C6", border:"2px #C67143 solid", boxShadow: "0px 0px 5px rgba(198,113,67, 0.8)"}} sx={{
       "& ::-webkit-scrollbar": {
         display: 'none'
       },
@@ -43,6 +48,7 @@ function UploadInput(props) {
       <SearchIcon className='searchIcon2'/>
     </div>
     <Autocomplete
+      filterOptions={filterOptions}
       key={props.rerender}
       value={props.content}
       onChange={(e, v)=>{
@@ -168,27 +174,54 @@ function App() {
           <div className="searchIconCont" onClick={() => {inputRef.focus();}}>
             <SearchIcon className='searchIcon'/>
           </div>
-          <Autocomplete
-            sx={{
-              '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                padding: "0 0 0 0",
+          {
+            classes == null ?
+            <Autocomplete
+                filterOptions={filterOptions}
+                sx={{
+                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+                    padding: "0 0 0 0",
+                },
+                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
+                    border: "0",
+                },
+                "& .MuiOutlinedInput-root":{
+                padding: 0,
             },
-              "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                border: "0",
+                }}
+                className='input'
+                disablePortal
+                onChange={(e, v, r) => console.log(v)}
+                options={[{"label": "loading"}]}
+                // ref={inputRef}
+                renderInput={(params) => <TextField {...params} placeholder={"Fetching Data..."} inputRef={input => {inputRef = input}}/>}
+                // ListboxProps={{background: 'black'}}
+                PaperComponent={CustomPaper}
+            />
+            :
+            <Autocomplete
+                filterOptions={filterOptions}
+                sx={{
+                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+                    padding: "0 0 0 0",
+                },
+                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
+                    border: "0",
+                },
+                "& .MuiOutlinedInput-root":{
+                padding: 0,
             },
-            "& .MuiOutlinedInput-root":{
-              padding: 0,
-          },
-            }}
-            className='input'
-            freeSolo
-            // onChange={setPlaceholder(classes[Math.floor(Math.random(classes.length))]['label'])}
-            options={classes}
-            // ref={inputRef}
-            renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-            // ListboxProps={{background: 'black'}}
-            PaperComponent={CustomPaper}
-          />
+                }}
+                className='input'
+                disablePortal
+                onChange={(e, v, r) => console.log(v)}
+                options={classes}
+                // ref={inputRef}
+                renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
+                // ListboxProps={{background: 'black'}}
+                PaperComponent={CustomPaper}
+            />
+          }
         </div>
       </div>
       <div className="credits">

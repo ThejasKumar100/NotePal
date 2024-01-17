@@ -58,7 +58,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('HV0zWBTtj7PkmLE0G2urJeUmcklkxuNR');
+  client = sdk.getBasicClient('m1PMek2gDPvhKoaVYFqU0iOXEVczLug4');
 })
 
 const cors=require("cors");
@@ -218,7 +218,7 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
   }
 });
 
-app.get("/getUploadID", async function(req, res){
+app.get("/getUploadID/:searchQuery", async function(req, res){
   let uploadID = [];
   let uploads = await retrieveUploads();
   uploads.forEach((element) =>{
@@ -227,16 +227,6 @@ app.get("/getUploadID", async function(req, res){
   res.send(uploadID);
 })
 
-app.get("/addUpload/:uploadNames", async function(req, res){
-  let currentTags = retrieveTagNames();
-  let sentTags = req.params.uploadNames;
-  sentTags.forEach((element) =>{
-    if(typeof element === "string" && !currentTags.includes(element.toLowerCase())){
-      updateTags(element);
-    }
-  })
-  res.send('Complete');
-});
 
 app.get("/generalInformation/:filter", async function(req, res){
   let data;
