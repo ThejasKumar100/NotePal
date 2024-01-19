@@ -83,7 +83,7 @@ function UploadInput(props) {
   );
 }
 
-function App() {
+function App(props) {
   let inputRef = useRef();
   let uploadRef = useRef();
   const [rerender, setRerender] = useState(false);
@@ -191,7 +191,7 @@ function App() {
                 }}
                 className='input'
                 disablePortal
-                onChange={(e, v, r) => console.log(v)}
+                onChange={(e, v) => console.log(v)}
                 options={[{"label": "loading"}]}
                 // ref={inputRef}
                 renderInput={(params) => <TextField {...params} placeholder={"Fetching Data..."} inputRef={input => {inputRef = input}}/>}
@@ -214,7 +214,7 @@ function App() {
                 }}
                 className='input'
                 disablePortal
-                onChange={(e, v, r) => console.log(v)}
+                onChange={(e, v, r) => props.setSubmitValue(v)}
                 options={classes}
                 // ref={inputRef}
                 renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}

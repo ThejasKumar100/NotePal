@@ -26,6 +26,14 @@ const CustomPaper = ({children}) => {
 };
 
 function CardResult(props){
+  let [image, setImage] = useState();
+  useEffect(() =>{
+    fetch(`http://localhost:4545/getFile/${props.uploadID}`)
+    .then(response => response.blob())
+    .then((data) =>{
+      setImage(URL.createObjectURL(data));
+    })
+  }, [])
   return(
     <div className='sr-card'>
       <div className='sr-info'>
@@ -33,40 +41,56 @@ function CardResult(props){
           {props.title}
         </div>
         <div className='sr-infoTag'>
-          {props.tag}
+          <b>Tags:</b> {props.tag}
         </div>
       </div>
       <div className='sr-thumbnailCont'>
-        <img className='sr-thumbnail' src={logo}/>
+        <img className='sr-thumbnail' src={image}/>
       </div>
     </div>);
 }
 
-function CreateCardResults(){
-  return(
-    <CardResult title="CS 1336" tag="dijkstra"/>
-  )
-}
-
 function SearchResults(props){
     let inputRef = useRef();
-    let [uploads, setUploads] = useState();
+    let [searchValue, setSearchValue] = useState(props.submitValue);
     let [classes, setClasses] = useState(false);
+    let [cardArray, setCardArray] = useState([]);
     let [placeholder, setPlaceholder] = useState();
     useEffect(() =>{
-        fetch('http://localhost:4545/searchFormat')
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          setClasses(data);
-          setPlaceholder(data[Math.floor(Math.random()* data.length)]['label'])
-        })
-        .catch(error => console.log(error))
+      fetch('http://localhost:4545/searchFormat')
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log(data);
+        setClasses(data);
+        setPlaceholder(data[Math.floor(Math.random()* data.length)]['label'])
+      })
+      .catch(error => console.log(error))
     }, [])
+    useEffect(() =>{
+      console.log(`Search Value: ${searchValue}`);
+      if(searchValue != null){
+        fetch(`http://localhost:4545/getUploadID/${searchValue["label"]}`)
+        .then((response) => response.json())
+        .then((data) =>{
+          return data;
+        })
+        .then((uploadID) => fetch(`http://localhost:4545/getFileInfo/${JSON.stringify(uploadID)}`))
+        .then((response)=> response.json())
+        .then((data) =>{
+          setCardArray([])
+          data.forEach(element => {
+            setCardArray((oldCards)=> [...oldCards, <CardResult key={element["key"]} uploadID={element["key"]} title={element["class_name"]} tag={element["tags"]}/>])
+          });
+        })
+      }
+      else{
+        setCardArray([])
+      }
+    }, [searchValue])
     return(
         <div className="sr-app">
           <div className="sr-header">
-            <div className='sr-imageContainer'>
+            <div className='sr-imageContainer' onClick={() => {props.setSearchPage(false)}}>
               <img className='sr-logo' src={logo} alt='NotePal Logo'/>
                 <p className='sr-name'>NOTEPAL</p>
             </div>
@@ -89,9 +113,9 @@ function SearchResults(props){
                     padding: 0,
                 },
                     }}
+                    value={searchValue}
                     className='sr-input'
                     disablePortal
-                    onChange={(e, v, r) => console.log(v)}
                     options={[{"label": "loading"}]}
                     // ref={inputRef}
                     renderInput={(params) => <TextField {...params} placeholder={"Fetching Data..."} inputRef={input => {inputRef = input}}/>}
@@ -113,12 +137,11 @@ function SearchResults(props){
                 },
                     }}
                     className='sr-input'
+                    value={searchValue}
                     disablePortal
-                    onChange={(e, v, r) => console.log(v)}
+                    onChange={(e, v, r) => setSearchValue(v)}
                     options={classes}
-                    // ref={inputRef}
                     renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-                    // ListboxProps={{background: 'black'}}
                     PaperComponent={CustomPaper}
                 />
               }
@@ -129,10 +152,11 @@ function SearchResults(props){
           </div>
           <div className="sr-sep"></div>
           <div className="sr-body">
-            <div className='sr-cardContainer'>
               {/* load 15 at a time only */}
-              {CreateCardResults()}
-            </div>
+              {/* <CreateCardResults searchValue={searchValue}/> */}
+              <div className="sr-cardContainer">
+                {cardArray}
+              </div>
           </div>
         </div>
     );
