@@ -58,7 +58,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('m1PMek2gDPvhKoaVYFqU0iOXEVczLug4');
+  client = sdk.getBasicClient('soHwsAaotEKj2jms3KuzhK6ZLSNNV1R9');
 })
 
 const cors=require("cors");
@@ -159,6 +159,58 @@ function retrieveUploads(){
   })
 }
 
+function retrieveClassInfo(upload_id){
+  return new Promise((res, rej) =>{
+    let SQLquery = `SELECT CONCAT(COALESCE(course_prefix, ''), ' ', COALESCE(class_number, ''), ' ', COALESCE(instructor, '')) AS class_name FROM class WHERE class_id=(SELECT class_id FROM uploads WHERE upload_id=${upload_id});`
+    con.query(SQLquery, function(error, results, fields){
+      if (error) rej(error);
+      else{res(results);}
+    });
+  })
+}
+
+function retrieveTagInfo(upload_id){
+  return new Promise((res, rej)=>{
+    let SQLquery = `SELECT tag_name_1,tag_name_2,tag_name_3,tag_name_4,tag_name_5,tag_name_6,tag_name_7,tag_name_8,tag_name_9,tag_name_10,tag_name_11,tag_name_12,tag_name_13,tag_name_14,tag_name_15 FROM uploads WHERE upload_id=${upload_id};`
+    con.query(SQLquery, function(error, results, fields){
+      if (error) rej(error);
+      else{res(results);}
+    });
+  })
+}
+
+function retrieveClassID(class_name){
+  return new Promise((res, rej) =>{
+    let SQLquery = `SELECT class_id FROM (SELECT class_id, CONCAT(COALESCE(course_prefix, ''), ' ', COALESCE(class_number, ''), ' ', COALESCE(instructor, '')) AS class_name FROM class HAVING class_name LIKE '%${class_name}%') AS t;`;
+    con.query(SQLquery, function(error, results, fields){
+      if (error) rej(error);
+      else{
+        // needs to be completed running a SELECT upload_id FROM uploads WHERE class_id=''; for each returned class_id
+        res(retrieveUploadID(results));
+      }
+    })
+  })
+}
+
+// sample input [{"class_id":914},{"class_id":915},{"class_id":916},{"class_id":3102}]
+function retrieveUploadID(ObjArray){
+  return new Promise((res, rej) =>{
+    let SQLquery = "SELECT upload_id FROM uploads WHERE class_id IN (";;
+    ObjArray.forEach((element, index, array) =>{
+      array[index] = "'" + element[Object.keys(element)[0]] + "'";
+    })
+    SQLquery = SQLquery + ObjArray.join(", ") + ");";
+    con.query(SQLquery, function(error, results, fields){
+      if(error){
+        rej(error);
+      }
+      else{
+        res(results)
+      }
+    })
+  })
+}
+
 //possible bug: a file with the same name as another uploaded will result in an error
 app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async function(req, res){
   // Will show as undefined if unavailable
@@ -219,14 +271,57 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
 });
 
 app.get("/getUploadID/:searchQuery", async function(req, res){
-  let uploadID = [];
-  let uploads = await retrieveUploads();
-  uploads.forEach((element) =>{
-    uploadID.push(element[Object.keys(element)[0]]);
-  })
-  res.send(uploadID);
+  if (req.params.searchQuery === 'random'){
+    let uploadID = [];
+    let uploads = await retrieveUploads();
+    uploads.forEach((element) =>{
+      uploadID.push(element[Object.keys(element)[0]]);
+    })
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(uploadID));
+  }
+  else{
+    let upload_id = await retrieveClassID(req.params.searchQuery);
+    upload_id.forEach((element, i, arr)=>{
+      arr[i] = element[Object.keys(element)[0]];
+    })
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(upload_id));
+  }
 })
 
+
+app.get("/getFile/:uploadID", async function(req, res){
+  client.files.getReadStream(req.params.uploadID, null, async function(error, stream){
+    if(error){
+      res.send("ERROR");
+    }
+    else{
+      stream.pipe(res);
+    }
+  })
+})
+
+//before fetching make sure that when you pass the array into the URL that the upload array is wrapped in JSON.stringify()
+//Example output: [{"class_name":"CS 1336 ","tags":"dijkstra"},{"class_name":"CS 1336 ","tags":"newtag3"},{"class_name":"CS 1336 ","tags":"bellman-ford"},{"class_name":"CS 1336 ","tags":"sorting"},{"class_name":"CS 1336 ","tags":"mergesort"}]
+app.get("/getFileInfo/:uploadArray", async function(req, res){
+  let uploadArray = JSON.parse(req.params.uploadArray);
+  let fileInfo = [];
+  await Promise.all(
+    uploadArray.map(async (element) =>{
+      let object = {};
+      let class_name = await retrieveClassInfo(element);
+      class_name = class_name[0]["class_name"];
+      object["class_name"] = class_name;
+      let tag_info = await retrieveTagInfo(element);
+      tag_info = Object.values(tag_info[0]);
+      tag_info = tag_info.filter(n => n);
+      object["tags"] = tag_info.join(", ")
+      fileInfo.push(object);
+    })
+  )
+  res.send(fileInfo);
+})
 
 app.get("/generalInformation/:filter", async function(req, res){
   let data;
@@ -266,83 +361,3 @@ app.get("/searchFormat", async function (req, res){
   })
   res.send(formattedClasses);
 })
-
-//Example get request that the front-end will have to use. (data in the Box is in UTF8 format as an ArrayBuffer data type, not sure how compatible ArrayBuffer is to Blob, which is the FrontEnd equivalent... may be a problem for displaying pictures down the line)
-app.get("/testNewUpload", async function (req, res) {
-  let fileName = 'back-end/images/PumpingLema1031.png';
-  let formData = new FormData();
-  fs.readFile(fileName, 'utf8', async function(err, image) {
-    if (err) res.send(err);
-    formData.append("name", "PumpingLema1031.png")
-    formData.append("file", image);
-    formData.append("tag_name1", "Pumping Lemma")
-    formData.append("tag_name2", "NULL")
-    formData.append("tag_name3", "NULL")
-    formData.append("tag_name4", "NULL")
-    formData.append("tag_name5", "NULL")
-    formData.append("tag_name6", "NULL")
-    formData.append("tag_name7", "NULL")
-    formData.append("tag_name8", "NULL")
-    formData.append("tag_name9", "NULL")
-    formData.append("tag_name10", "NULL")
-    formData.append("tag_name11", "NULL")
-    formData.append("tag_name12", "NULL")
-    formData.append("tag_name13", "NULL")
-    formData.append("tag_name14", "NULL")
-    formData.append("tag_name15", "NULL")
-    formData.append("class_number", "4337")
-    formData.append("course_prefix", "CS")
-    formData.append("instructor", "Davis, Chris I; Sidheekh, Sahil; Rath, Avilash S")
-    formData.append("term", "Spring 2023")
-    formData.append("section", "504")
-    let data = await axios.post('http://localhost:4545/newUpload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    res.send(data.data);
-  });
-});
-
-//NotePal Folder 240811112427
-app.post("/newUpload", async function (req, res) {
-  console.log("Request Received");
-
-  let sampleFile = req.body.file;
-  let fileName = req.body.name;
-
-  let folderID = '240811112427';
-
-  let tag_name1 = '\'' + req.body.tag_name1 + '\'';
-  let tag_name2 = (req.body.tag_name2 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name2 + '\'');
-  let tag_name3 = (req.body.tag_name3 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name3 + '\'');
-  let tag_name4 = (req.body.tag_name4 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name4 + '\'');
-  let tag_name5 = (req.body.tag_name5 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name5 + '\'');
-  let tag_name6 = (req.body.tag_name6 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name6 + '\'');
-  let tag_name7 = (req.body.tag_name7 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name7 + '\'');
-  let tag_name8 = (req.body.tag_name8 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name8 + '\'');
-  let tag_name9 = (req.body.tag_name9 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name9 + '\'');
-  let tag_name10 = (req.body.tag_name10 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name10 + '\'');
-  let tag_name11 = (req.body.tag_name11 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name11 + '\'');
-  let tag_name12 = (req.body.tag_name12 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name12 + '\'');
-  let tag_name13 = (req.body.tag_name13 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name13 + '\'');
-  let tag_name14 = (req.body.tag_name14 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name14 + '\'');
-  let tag_name15 = (req.body.tag_name15 == 'NULL' ) ? 'NULL' : ('\'' + req.body.tag_name15 + '\'');
-  let class_number = req.body.class_number;
-  let course_prefix = req.body.course_prefix;
-  let instructor = req.body.instructor;
-  let term = req.body.term;
-  let section = req.body.section;
-
-  client.files.uploadFile(folderID, fileName, sampleFile)
-	.then(file => {
-    con.query(`INSERT INTO uploads values((SELECT class_id FROM class WHERE class_number=${class_number} AND course_prefix='${course_prefix}' AND instructor='${instructor}' AND term='${term}' AND section=${section}), ${file.entries[0].id}, ${tag_name1}, ${tag_name2}, ${tag_name3}, ${tag_name4}, ${tag_name5}, ${tag_name6}, ${tag_name7}, ${tag_name8}, ${tag_name9}, ${tag_name10}, ${tag_name11}, ${tag_name12}, ${tag_name13}, ${tag_name14}, ${tag_name15} );`, function (error, results, fields) {
-      if (error) console.log(error);
-    });
-    res.send("Successfully Received");
-  }).catch(err => {
-    console.log(err);
-    console.log("Error");
-    res.send("Error");
-  });
-});

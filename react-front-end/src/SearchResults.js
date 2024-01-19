@@ -25,8 +25,32 @@ const CustomPaper = ({children}) => {
     );
 };
 
+function CardResult(props){
+  return(
+    <div className='sr-card'>
+      <div className='sr-info'>
+        <div className='sr-infoTitle'>
+          {props.title}
+        </div>
+        <div className='sr-infoTag'>
+          {props.tag}
+        </div>
+      </div>
+      <div className='sr-thumbnailCont'>
+        <img className='sr-thumbnail' src={logo}/>
+      </div>
+    </div>);
+}
+
+function CreateCardResults(){
+  return(
+    <CardResult title="CS 1336" tag="dijkstra"/>
+  )
+}
+
 function SearchResults(props){
     let inputRef = useRef();
+    let [uploads, setUploads] = useState();
     let [classes, setClasses] = useState(false);
     let [placeholder, setPlaceholder] = useState();
     useEffect(() =>{
@@ -44,7 +68,7 @@ function SearchResults(props){
           <div className="sr-header">
             <div className='sr-imageContainer'>
               <img className='sr-logo' src={logo} alt='NotePal Logo'/>
-                {/* NOTEPAL */}
+                <p className='sr-name'>NOTEPAL</p>
             </div>
             <div className='sr-inputContainer'>
               <div className="sr-searchIconCont" onClick={() => {inputRef.focus();}}>
@@ -99,42 +123,15 @@ function SearchResults(props){
                 />
               }
             </div>
+            <div className='sr-headerFiller'>
+
+            </div>
           </div>
           <div className="sr-sep"></div>
           <div className="sr-body">
             <div className='sr-cardContainer'>
               {/* load 15 at a time only */}
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-              <div className="sr-card">
-              </div>
-
+              {CreateCardResults()}
             </div>
           </div>
         </div>
