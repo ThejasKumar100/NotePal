@@ -58,7 +58,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('soHwsAaotEKj2jms3KuzhK6ZLSNNV1R9');
+  client = sdk.getBasicClient('iHvLMYvjQHsbWfofaYiLOkdCamgvaODS');
 })
 
 const cors=require("cors");
@@ -116,12 +116,16 @@ function tagFormatting(tags){
   return formattedTags.join(", ")
 }
 
-function retrieveClassInfo(string){
+function retrieveClassInfoUpload(string){
   return new Promise((resolve, reject) =>{
-      con.query(`SELECT DISTINCT ${string} FROM class`, function (error, results, fields) {
-          if (error) reject(error);
+      con.query(`SELECT DISTINCT ${string} FROM class;`, function (error, results, fields) {
+          if (error) {
+            console.log(error)
+            reject(error);
+          }
           else {
-              resolve(results);
+            console.log(results);
+            resolve(results);
           }
         });
   })
@@ -221,9 +225,11 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
   let instructor = req.params.instructor === "undefined" || req.params.instructor === "null" ? "undefined" : JSON.parse(req.params.instructor)["label"];
   let term = req.params.term === "undefined" || req.params.term === "null" ? "undefined" : JSON.parse(req.params.term)["label"];
   let tags = req.params.tags === "undefined" || req.params.tags === "null" ? "undefined" : JSON.parse(req.params.tags);
-  console.log(`Tags: ${tags}`);
+  if(req.files == null){
+    res.send(JSON.stringify("Please include a file!"));
+  }
   if(tags === "undefined"){
-    res.send(JSON.stringify("NO TAGS"));
+    res.send(JSON.stringify("At least one tag must be present!"));
   }
   else{
     let currentTags = await retrieveTagNames();
@@ -247,7 +253,7 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
     })
     checkExistence(coursePrefix, classNumber, section, instructor).then(async (results) =>{
       let class_id = results[0].class_id;
-      let fileName = req.files.file.name;
+      let fileName = new Date().toJSON();
       let file = req.files.file.data;
       console.log(file)
       return [await client.files.uploadFile('240811112427', fileName, file), class_id];
@@ -265,7 +271,7 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
     .catch((error) =>{
       console.log(error);
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify("ERROR"));
+      res.end(JSON.stringify("That class may not exist or try to be more specific!"));
     })
   }
 });
@@ -290,13 +296,14 @@ app.get("/getUploadID/:searchQuery", async function(req, res){
   }
 })
 
-
 app.get("/getFile/:uploadID", async function(req, res){
   client.files.getReadStream(req.params.uploadID, null, async function(error, stream){
     if(error){
       res.send("ERROR");
     }
     else{
+      // let string = await streamToBase64(stream);
+      // res.send(string);
       stream.pipe(res);
     }
   })
@@ -317,6 +324,7 @@ app.get("/getFileInfo/:uploadArray", async function(req, res){
       tag_info = Object.values(tag_info[0]);
       tag_info = tag_info.filter(n => n);
       object["tags"] = tag_info.join(", ")
+      object["key"] = element;
       fileInfo.push(object);
     })
   )
@@ -329,12 +337,14 @@ app.get("/generalInformation/:filter", async function(req, res){
     data = await retrieveTagNames()
   }
   else{
-    data = await retrieveClassInfo(req.params.filter);
+    data = await retrieveClassInfoUpload(req.params.filter);
+    console.log(data)
   }
   let formattedData = [];
   data.forEach(element => {
     let temp = {};
     if (element[Object.keys(element)[0]] == null){
+      console.log("null value")
       return;
     }
     temp["label"] = element[Object.keys(element)[0]];
@@ -351,7 +361,7 @@ app.get("/searchFormat", async function (req, res){
   classes.forEach(element => {
     let temp = {};
     let string = [element.course_prefix, element.class_number, element.instructor];
-    temp["label"] = (string.join(" "));
+    temp["label"] = (string.join(" ").trim());
     formattedClasses.push(temp)
   });
   tag_names.forEach(element => {

@@ -9,6 +9,12 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ImageIcon from '@mui/icons-material/Image';
 import { motion } from 'framer-motion'
+import { bouncy } from 'ldrs'
+
+bouncy.register('loading-bounce')
+
+// Default values shown
+
 
 const filterOptions = createFilterOptions({
   matchFrom: 'any',
@@ -87,6 +93,7 @@ function App(props) {
   let inputRef = useRef();
   let uploadRef = useRef();
   const [rerender, setRerender] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [messageValue, setMessageValue] = useState();
   const [notification, setNotification] = useState(false);
   const [file, setFile] = useState();
@@ -123,12 +130,19 @@ function App(props) {
     e.preventDefault();
     e.stopPropagation();
     
+// filename.split('.').pop()
+
     const {files} = e.dataTransfer;
-    if (files && files.length) {
-      console.log(files);
+    console.log(files[0]["name"].split('.').pop().toLowerCase());
+    let file_ext = files[0]["name"].split('.').pop().toLowerCase();
+    if (files && files.length == 1 && (file_ext === "png" || file_ext === "jpg")) {
       setFileReceived(true);
       setFile(URL.createObjectURL(files[0]))
       setRawFile(files[0]);
+    }
+    else{
+      setNotification(true);
+      setMessageValue("Only one file of type PNG/JPG can be uploaded!");
     }
   }
   let clearForm = () =>{
@@ -144,7 +158,8 @@ function App(props) {
     setRerender(!rerender);
   }
   let uploadInfo = () =>{
-    var data = new FormData()
+    setLoading(true);
+    var data = new FormData();
     data.append('file', rawFile)
     fetch(`http://localhost:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor};${term};${tags}`, {
       method: 'POST',
@@ -159,7 +174,7 @@ function App(props) {
       }
     }).catch((error) =>{
       console.log(`http://localhost:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
-    })
+    }).finally(() => setLoading(false))
   }
   return (
     <div className="app">
@@ -250,7 +265,11 @@ function App(props) {
             <div className="uploadCriteriaInput instructor"><UploadInput content={instructor} setContent={setInstructor} rerender={rerender} url={'instructor'} placeholder={"Instructor(s)"}/></div>
             <div className="uploadCriteriaInput term"><UploadInput disabled={coursePrefix == null || classNumber == null || section == null ? true : false} content={term} setContent={setTerm} rerender={rerender} url={'term'} placeholder={"Term"}/></div>
             <div className="uploadCriteriaInput tags"><UploadInput content={tags} setContent={setTags} rerender={rerender} url={'tags'} placeholder={"Tags"}/></div>
-            <div onClick={uploadInfo} className="submit">Upload!</div>
+            {
+              isLoading ?
+              <div className="submit loading">{<loading-bounce size="40"></loading-bounce>}</div> :
+              <div onClick={uploadInfo} className="submit">Upload!</div>
+            }
               {/*This next portion will probably need to be changed to accept multiple files but for now the logic only permits the storage of one file at a time. The SQL database depends on their only being one file. We may have to have the backend collate the files or ask the user to do it instead. For now the path is to force the user to collate it themselves. */}
               {fileReceived ?
               <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
@@ -258,7 +277,7 @@ function App(props) {
               </div>
               : 
               <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
-                <input onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);}} ref={input => uploadRef = input} hidden type='file'/>
+                <input accept="image/png, image/jpg, image/jpeg" onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);console.log(e.target.files[0])}} ref={input => uploadRef = input} hidden type='file'/>
                 <div className="callDrop">Drop Files Here</div>
                 <div className="imageIconContainer">
                     <ImageIcon style={{fontSize:'126px', color:'#3B1910'}}/>
@@ -269,7 +288,7 @@ function App(props) {
               {
                 notification ?
                 <motion.div animate={{opacity: [0, 1, 1, 0], top: ["-5%", "5%", "5%", "-5%"]}} transition={{duration: 4, times: [0, 0.2, 0.8, 1], ease: ["easeIn", "easeIn", "easeOut"]}} onAnimationComplete={() => setNotification(false)} className="notif">
-                    {messageValue === "SUCCESS" ? "Successfully Uploaded!" : "An Error Occurred!"}
+                    {messageValue === "SUCCESS" ? "Successfully Uploaded!" : messageValue}
                 </motion.div>
                 :
                 null
