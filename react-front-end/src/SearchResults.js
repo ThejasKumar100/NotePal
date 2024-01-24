@@ -4,6 +4,11 @@ import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import logo from './notepal_logo.png'
 import SearchIcon from '@mui/icons-material/Search';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { ring } from 'ldrs'
+
+ring.register("loading-ring")
 
 const filterOptions = createFilterOptions({
   matchFrom: 'any',
@@ -27,15 +32,26 @@ const CustomPaper = ({children}) => {
 
 function CardResult(props){
   let [image, setImage] = useState();
+  let [loaded, setLoaded] = useState(false);
+  let [focused, setFocused] = useState(false);
+  function escFunction(event){
+    if (event.key === "Escape") {
+      setFocused(false);
+    }
+  }
   useEffect(() =>{
+    document.addEventListener("keydown", escFunction, false);
     fetch(`http://localhost:4545/getFile/${props.uploadID}`)
     .then(response => response.blob())
     .then((data) =>{
       setImage(URL.createObjectURL(data));
+      setLoaded(true);
     })
   }, [])
   return(
-    <div className='sr-card'>
+    <div onClick={() =>{
+      setFocused(true)
+    }} className='sr-card'>
       <div className='sr-info'>
         <div className='sr-infoTitle'>
           {props.title}
@@ -44,16 +60,35 @@ function CardResult(props){
           <b>Tags:</b> {props.tag}
         </div>
       </div>
-      <div className='sr-thumbnailCont'>
-        <img className='sr-thumbnail' src={image}/>
-      </div>
-    </div>);
+        { loaded ?
+        <div className='sr-thumbnailCont'>
+          <img className='sr-thumbnail' src={image}/>
+        </div>
+        :
+        <div className='sr-thumbnailCont'>
+          <loading-ring color="#3B1910"></loading-ring>
+        </div>
+        }
+        {
+          focused && loaded ?
+          <div onClick={(e) => {e.stopPropagation(); setFocused(false)}} className='sr-fullScreenContainer'>
+            <img className='sr-fullScreenImage' src={image}/>
+          </div> :
+          null
+        }
+        
+    </div>
+    );
 }
 
 function SearchResults(props){
     let inputRef = useRef();
     let [searchValue, setSearchValue] = useState(props.submitValue);
     let [classes, setClasses] = useState(false);
+    let [uploadArray, setUploadArray] = useState([]);
+    let [activeUploads, setActiveUploads] = useState([]);
+    let [numberOfPages, setNumberOfPages] = useState();
+    let [activePage, setActivePage] = useState(1);
     let [cardArray, setCardArray] = useState([]);
     let [placeholder, setPlaceholder] = useState();
     useEffect(() =>{
@@ -66,24 +101,46 @@ function SearchResults(props){
       })
       .catch(error => console.log(error))
     }, [])
+    useEffect(()=>{
+      if (uploadArray.length > 0){
+        setActiveUploads((numberOfPages > activePage ? (uploadArray.slice(15*(activePage - 1), (15*(activePage - 1)) + 15)) : (uploadArray.slice(15*(activePage - 1), uploadArray.length))));
+      }
+    }, [activePage, uploadArray])
     useEffect(() =>{
-      console.log(`Search Value: ${searchValue}`);
-      if(searchValue != null){
-        fetch(`http://localhost:4545/getUploadID/${searchValue["label"]}`)
-        .then((response) => response.json())
-        .then((data) =>{
-          return data;
-        })
-        .then((uploadID) => fetch(`http://localhost:4545/getFileInfo/${JSON.stringify(uploadID)}`))
-        .then((response)=> response.json())
+      fetch(`http://localhost:4545/getFileInfo/${JSON.stringify(activeUploads)}`)
+      .then((response)=> response.json())
         .then((data) =>{
           setCardArray([])
           data.forEach(element => {
             setCardArray((oldCards)=> [...oldCards, <CardResult key={element["key"]} uploadID={element["key"]} title={element["class_name"]} tag={element["tags"]}/>])
           });
         })
+    }, [activeUploads])
+    useEffect(() =>{
+      console.log(`Search Value: ${searchValue}`);
+      setCardArray([])
+      if(searchValue != null){
+        fetch(`http://localhost:4545/getUploadID/${searchValue["label"]}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setUploadArray(data);
+          setNumberOfPages(Math.ceil(data.length/15));
+          // setActiveUploads((numberOfPages > activePage ? (uploadArray.slice(15*(activePage - 1), (15*(activePage - 1)) + 15)) : (uploadArray.slice(15*(activePage - 1), uploadArray.length))));
+          // console.log(`active uploads: ${activeUploads}\nactive page: ${activePage}\nnumber of pages: ${numberOfPages}\nupload array: ${uploadArray.slice(15*(activePage - 1), uploadArray.length)}\ndata: ${data}`);
+          // return data;
+        })
+        // .then((uploadID) => fetch(`http://localhost:4545/getFileInfo/${JSON.stringify(uploadID)}`))
+        // .then((response)=> response.json())
+        // .then((data) =>{
+        //   setCardArray([])
+        //   data.forEach(element => {
+        //     setCardArray((oldCards)=> [...oldCards, <CardResult key={element["key"]} uploadID={element["key"]} title={element["class_name"]} tag={element["tags"]}/>])
+        //   });
+        // })
       }
       else{
+        setUploadArray([])
+        setNumberOfPages(0)
         setCardArray([])
       }
     }, [searchValue])
@@ -147,7 +204,8 @@ function SearchResults(props){
               }
             </div>
             <div className='sr-headerFiller'>
-
+              <KeyboardArrowLeftIcon style={{fontSize: "4rem"}} className={`sr-icon ${activePage > 1 ? null : "sr-disabled"}`}/>
+              <KeyboardArrowRightIcon style={{fontSize: "4rem"}} className={`sr-icon ${numberOfPages > activePage ? null : "sr-disabled"}`}/>
             </div>
           </div>
           <div className="sr-sep"></div>

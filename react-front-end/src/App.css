@@ -354,7 +354,7 @@
   align-self: center;
   flex-direction: column;
   overflow: hidden;
-  padding: 1%;
+  /* padding: 1%; */
 
 }
 .callDrop{
@@ -399,8 +399,8 @@
   cursor: pointer;
 }
 .previewImage{
-  height: 100%;
-  max-width: 100%;
+  max-height: 90%;
+  max-width: 90%;
   object-fit: contain;
   border-radius: 5%;
 }
@@ -509,7 +509,20 @@ html{
   cursor: pointer;
 }
 .sr-headerFiller{
-  flex:2
+  flex:2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10%;
+}
+.sr-icon{
+  color: var(--tertiary);
+}
+.sr-icon:hover{
+  cursor: pointer;
+}
+.sr-disabled{
+  opacity: 0.4;
 }
 .sr-logo{
   object-fit: contain;
@@ -599,7 +612,31 @@ html{
   height: 90%;
   object-fit: contain;
 }
-
+.sr-loading{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: red;
+}
+.sr-fullScreenContainer{
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+  animation-name: fade-in;
+  animation-duration: 0.5s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sr-fullScreenImage{
+  object-fit: contain;
+  height: 80%;
+}
 
 @keyframes fade-in{
   from {

@@ -58,7 +58,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('iHvLMYvjQHsbWfofaYiLOkdCamgvaODS');
+  client = sdk.getBasicClient('NVJFOGjbmz2ND5vBU2OY01goOwOUpEUN');
 })
 
 const cors=require("cors");

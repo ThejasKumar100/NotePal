@@ -108,7 +108,27 @@ function App(props) {
   const [uploadButtonPressed, setUploadButton] = useState(false);
   const [classes, setClasses] = useState([]);
   const [placeholder, setPlaceholder] = useState();
+  function clearUploads(){
+    setUploadButton(false);
+    setFile();
+    setRawFile();
+    setCoursePrefix();
+    setClassNumber();
+    setSection();
+    setInstructor();
+    setTerm();
+    setTags();
+    setRawFile();
+    setFile();
+    setFileReceived(false);
+  }
   useEffect(() => {
+    document.addEventListener("keydown", (event) =>{
+      if(event.key == "Escape"){
+        setUploadButton(!uploadButtonPressed);
+        clearUploads();
+      }
+    })
     fetch('http://localhost:4545/searchFormat')
     .then((response) => response.json())
     .then((data) => {
@@ -241,20 +261,20 @@ function App(props) {
       </div>
       <div className="credits">
         Made with the keyboards and mice of <b>ΘTA</b>, a UTD Professional Engineering Organization <br/>
-        Powered by The Mercury <br/>
+        Powered by <a href="https://www.utdnebula.com/" target='_blank'>Nebula Labs</a> <br/>
         Built by the NotePal Team
       </div>
       <div className="uploadButton" onClick={() => {setUploadButton(!uploadButtonPressed)}}>
             <AddRoundedIcon style={{fontSize:'42px', color:'#3B1910'}}/>
       </div>
       {uploadButtonPressed ? 
-      <div className="blackGlass" onClick={() => {setUploadButton(!uploadButtonPressed)}}>
+      <div className="blackGlass" onClick={() => {setUploadButton(!uploadButtonPressed);clearUploads();}}>
         <div className="formContainer" onClick={(e) => {e.stopPropagation();}}>
           <div className="formHeader">
             <div className="formHeaderTitle">
                 Note Upload
             </div>
-            <div className='xContainer' onClick={() => setUploadButton(!uploadButtonPressed)}>
+            <div className='xContainer' onClick={() => {setUploadButton(!uploadButtonPressed);clearUploads();}}>
               <CloseRoundedIcon className='xIcon' style={{fontSize:'42px', color:'#3B1910'}}/>
             </div>
           </div>
