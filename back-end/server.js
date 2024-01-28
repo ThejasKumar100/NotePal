@@ -58,7 +58,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('NVJFOGjbmz2ND5vBU2OY01goOwOUpEUN');
+  client = sdk.getBasicClient('rNNqCUhbkjgoDMHC9nFAtDlAqpPmoJhc');
 })
 
 const cors=require("cors");
@@ -170,6 +170,16 @@ function retrieveClassInfo(upload_id){
       if (error) rej(error);
       else{res(results);}
     });
+  })
+}
+
+function retrieveUploadIDFromTags(tag_name){
+  return new Promise((res, rej) =>{
+    let SQLquery= `SELECT upload_id FROM uploads WHERE tag_name_1 LIKE '%${tag_name}%' OR tag_name_2 LIKE '%${tag_name}%' OR tag_name_3 LIKE '%${tag_name}%' OR tag_name_4 LIKE '%${tag_name}%' OR tag_name_5 LIKE '%${tag_name}%' OR tag_name_6 LIKE '%${tag_name}%' OR tag_name_7 LIKE '%${tag_name}%' OR tag_name_8 LIKE '%${tag_name}%' OR tag_name_9 LIKE '%${tag_name}%' OR tag_name_10 LIKE '%${tag_name}%' OR tag_name_11 LIKE '%${tag_name}%' OR tag_name_12 LIKE '%${tag_name}%' OR tag_name_13 LIKE '%${tag_name}%' OR tag_name_14 LIKE '%${tag_name}%' OR tag_name_15 LIKE '%${tag_name}%';`;
+    con.query(SQLquery, function(error, results, fields){
+      if (error) rej(error);
+      else{res(results);}
+    })
   })
 }
 
@@ -287,7 +297,13 @@ app.get("/getUploadID/:searchQuery", async function(req, res){
     res.send(JSON.stringify(uploadID));
   }
   else{
-    let upload_id = await retrieveClassID(req.params.searchQuery);
+    // check for existence within the classes database AND tag_name database
+    let upload_id;
+    try {
+      upload_id = await retrieveClassID(req.params.searchQuery);
+    } catch (error) {
+      upload_id = await retrieveUploadIDFromTags(req.params.searchQuery);
+    }
     upload_id.forEach((element, i, arr)=>{
       arr[i] = element[Object.keys(element)[0]];
     })
