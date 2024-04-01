@@ -51,6 +51,7 @@
     }
 
     .searchInput {
+        /* z-index: 9998; */
         border: none;
         background: none;
         outline: none;
