@@ -18,7 +18,12 @@ function retrieveSecrets(){
         reject(err);
       }
       else{
-        resolve(data.split('\n'));
+        arr = []
+        data.split("\n").forEach(element => {
+          arr.push(element.trim())
+        });
+        console.log(arr)
+        resolve(arr)
       }
     });
   })
@@ -58,7 +63,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('rNNqCUhbkjgoDMHC9nFAtDlAqpPmoJhc');
+  client = sdk.getBasicClient('BKT9TT8bORHSLzKlCmEwYZFEQwwmH0Ov');
 })
 
 const cors=require("cors");
@@ -386,4 +391,25 @@ app.get("/searchFormat", async function (req, res){
     formattedClasses.push(temp)
   })
   res.send(formattedClasses);
+})
+
+app.get("/nebulaTest", async function (req,res){
+
+  
+  const headers = {
+    "x-api-key": retrieveSecrets()[7],
+    "Accept": 'application/json',
+  };
+  fetch('https://api.utdnebula.com/section', {
+  method: 'GET',
+
+  headers: headers,
+  })
+  .then(function (res) {
+    return res.json();
+  })
+  .then(function (body) {
+    console.log(body.data.length);
+    res.send(body.data)
+  });
 })
