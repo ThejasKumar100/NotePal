@@ -22,7 +22,6 @@ function retrieveSecrets(){
         data.split("\n").forEach(element => {
           arr.push(element.trim())
         });
-        console.log(arr)
         resolve(arr)
       }
     });
@@ -63,7 +62,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('BKT9TT8bORHSLzKlCmEwYZFEQwwmH0Ov');
+  client = sdk.getBasicClient('TtfUrVYgrzggEW64mcpt49dtJBkWLeFo');
 })
 
 const cors=require("cors");
@@ -271,7 +270,7 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
       let fileName = new Date().toJSON();
       let file = req.files.file.data;
       console.log(file)
-      return [await client.files.uploadFile('240811112427', fileName, file), class_id];
+      return [await client.files.uploadFile('240811112427', fileName, file), class_id]; //folder id
     })
     .then((response) =>{
       let formattedTags = tagFormatting(tags);
