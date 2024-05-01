@@ -238,6 +238,7 @@
   /* justify-items: center; */
   column-gap: 40px;
   grid-template-columns: 1fr 1fr 1.5fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
 
 }
 .inputContainer2{

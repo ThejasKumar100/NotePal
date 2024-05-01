@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "@nestjs/schedule": "^4.0.2",
     "box-node-sdk": "^3.4.2",
     "express.js": "^1.0.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "query-string": "^9.0.0"
   }
 }

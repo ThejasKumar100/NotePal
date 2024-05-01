@@ -7,7 +7,7 @@ const fileUpload = require('express-fileupload');
 const { Readable } = require("node:stream");
 const axios = require('axios');
 const MultiStream = require('multistream');
-
+const qs = require("querystring")
 
 
 let secrets;
@@ -26,13 +26,34 @@ function retrieveSecrets(){
       }
     });
   })
-
+  
 }
 
 let con;
 let server;
 let sdk;
 let client;
+let refresh;
+
+setInterval(async ()=>{
+  const authenticationUrl = "https://api.box.com/oauth2/token";
+
+  let tokens = await axios
+  .post(
+    authenticationUrl,
+    qs.stringify({
+      grant_type: "refresh_token",
+      refresh_token: refresh,
+      client_id: "hkoogqpabx0z8kb1m5u5dcmpo33mkzit",
+      client_secret: "pw7HV0LTmyhFt2itiBY0xwNSIrsfgdyx",
+    })
+  )
+  .then((response) => response.data);
+  console.log(tokens)
+  refresh = tokens.refresh_token
+  client = sdk.getBasicClient(tokens.access_token)
+
+}, 1000*60*30)
 
 retrieveSecrets().then((result) =>{
   secrets = result;
@@ -62,7 +83,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('TtfUrVYgrzggEW64mcpt49dtJBkWLeFo');
+  client = sdk.getBasicClient('VzzfHtOT4QdFOaZGZwSlCrJbZFR02G8j');
 })
 
 const cors=require("cors");
@@ -290,6 +311,31 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
   }
 });
 
+app.get("/test", async function(req, res){
+  res.redirect("https://account.box.com/api/oauth2/authorize?client_id=hkoogqpabx0z8kb1m5u5dcmpo33mkzit&response_type=code&redirect_uri=http://localhost:4545/test2")
+  // res.send("SUCCESS")
+})
+
+app.get("/test2", async function(req, res){
+  const authenticationUrl = "https://api.box.com/oauth2/token";
+
+  let tokens = await axios
+  .post(
+    authenticationUrl,
+    qs.stringify({
+      grant_type: "authorization_code",
+      code: req.query.code,
+      client_id: "hkoogqpabx0z8kb1m5u5dcmpo33mkzit",
+      client_secret: "pw7HV0LTmyhFt2itiBY0xwNSIrsfgdyx",
+    })
+  )
+  .then((response) => response.data);
+  console.log(tokens)
+  refresh = tokens.refresh_token
+  client = sdk.getBasicClient(tokens.access_token)
+  res.send("Success")
+})
+
 app.get("/getUploadID/:searchQuery", async function(req, res){
   if (req.params.searchQuery === 'random'){
     let uploadID = [];
@@ -317,6 +363,7 @@ app.get("/getUploadID/:searchQuery", async function(req, res){
 })
 
 app.get("/getFile/:uploadID", async function(req, res){
+  console.log(req.params)
   client.files.getReadStream(req.params.uploadID, null, async function(error, stream){
     if(error){
       res.send("ERROR");
@@ -408,7 +455,7 @@ app.get("/nebulaTest", async function (req,res){
     return res.json();
   })
   .then(function (body) {
-    console.log(body.data.length);
-    res.send(body.data)
+    // console.log(body.data.length);
+    res.send(body)
   });
 })
