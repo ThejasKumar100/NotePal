@@ -76,7 +76,9 @@
   font-size: 1.2rem;
   font-weight: normal;
 }
-.inputContainer{
+
+@media screen and (max-width: 768px) {
+  .inputContainer {
   width: 50%;
   display: flex;
   align-items: center;
@@ -87,7 +89,24 @@
   border: 2px solid var(--secondary);
   flex-direction: row;
   margin: 3.5%;
+  }
 }
+
+@media screen and (min-width: 1024px) {
+  .inputContainer {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  height: fit-content;
+  border-radius: 16px;
+  border: 2px solid var(--secondary);
+  flex-direction: row;
+  margin: 3.5%;
+  }
+}
+
 .searchIconCont{
   flex:1;
   height: 100%;
@@ -222,25 +241,109 @@
 .xIcon{
   margin-right: 20px;
 }
-.uploadInformation{
+
+
+.uploadInformation {
   padding: 0 20px 20px 20px;
   width: 100%;
   flex: 4;
   font-family: 'Ale';
-  /* border: 1px solid blue; */
+
   display: grid;
   grid-template-areas:
     "input1 input4  filedrop"
-    "input2 input5  filedrop"
-    "input3 input6  filedrop"
+    "input2 input6  filedrop"
     "submit submit  filedrop";
   align-items: center;
-  /* justify-items: center; */
   column-gap: 40px;
   grid-template-columns: 1fr 1fr 1.5fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
-
 }
+
+/* Media Query for smaller screens */
+@media screen and (max-width: 768px) {
+  .uploadInformation {
+    grid-template-columns: 1fr; /* Change to a single column layout for smaller screens */
+    grid-template-areas:
+      "input1"
+      "input2"
+      "input3"
+      "input4"
+      "input5"
+      "input6"
+      "submit"
+      "filedrop";
+    column-gap: 0; /* Remove column gap */
+  }
+}
+
+/* Media Query for smaller screens */
+@media screen and (max-width: 576px) {
+  .uploadInformation {
+    grid-template-columns: 1fr; /* Change to a single column layout for smaller screens */
+    grid-template-areas:
+      "input1"
+      "input2"
+      "input3"
+      "input4"
+      "input5"
+      "input6"
+      "submit"
+      "filedrop";
+    row-gap: 10px;
+  }
+}
+
+
+
+.uploadInformation {
+  padding: 0 20px 20px 20px;
+  width: 100%;
+  flex: 4;
+  font-family: 'Ale';
+  display: grid;
+  grid-template-areas:
+    "input1 filedrop"
+    "input4 input6  filedrop"
+    "input6 filedrop"
+    "submit submit filedrop";
+  align-items: center;
+  column-gap: 40px;
+  grid-template-columns: 1fr 1fr 1.5fr;
+}
+
+/* Media Query for smaller screens */
+@media screen and (max-width: 768px) {
+  .uploadInformation {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "input1"
+      "input2"
+      "input3"
+      "input4"
+      "input5"
+      "input6"
+      "submit"
+      "filedrop";
+    column-gap: 0;
+  }
+}
+
+/* Media Query for medium screens */
+@media screen and (min-width: 769px) and (max-width: 1023px) {
+  .uploadInformation {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+  }
+}
+
+/* Media Query for larger screens */
+@media screen and (min-width: 1024px) {
+  .uploadInformation {
+    grid-template-columns: 1fr 1fr 1.5fr;
+    column-gap:20px;
+  }
+}
+
 .inputContainer2{
   width: 100%;
   display: flex;
@@ -424,6 +527,7 @@
   padding-left: 3%;
   padding-right: 3%;
 }
+
 @media screen and (max-width: 500px){
   .container{
     display: flex;
@@ -526,7 +630,8 @@
     width: 100%;
     flex: 1;
     /* border: 1px solid red; */
-    display: flex;
+
+    display: block;
     align-items: center;
     justify-content: center;
     flex-direction: row;
@@ -537,7 +642,8 @@
   .formHeaderTitle {
     flex: 3;
     /* border: 1px solid blue; */
-    display: flex;
+
+    display: block;
     align-items: center;
     justify-content: center;
     padding-left: 10px;
@@ -685,13 +791,23 @@ html{
 }
 .sr-imageContainer:hover{
   cursor: pointer;
-}
-.sr-headerFiller{
-  flex:2;
+
+}.sr-headerFiller {
+  flex: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10%;
+  gap: 5%; /* Decreased the gap for smaller screens */
+
+  /* Additional adjustments for smaller screens */
+  flex-direction: column; /* Adjusted to column layout */
+}
+
+@media screen and (max-width: 768px) {
+  .sr-headerFiller {
+    /* Adjustments for even smaller screens */
+    gap: 3%; /* Further decreased the gap */
+  }
 }
 .sr-icon{
   color: var(--tertiary);

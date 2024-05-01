@@ -10,6 +10,7 @@ const MultiStream = require('multistream');
 const qs = require("querystring")
 
 
+
 let secrets;
 function retrieveSecrets(){
   return new Promise((resolve, reject) =>{
@@ -27,6 +28,7 @@ function retrieveSecrets(){
     });
   })
   
+
 }
 
 let con;
@@ -363,7 +365,6 @@ app.get("/getUploadID/:searchQuery", async function(req, res){
 })
 
 app.get("/getFile/:uploadID", async function(req, res){
-  console.log(req.params)
   client.files.getReadStream(req.params.uploadID, null, async function(error, stream){
     if(error){
       res.send("ERROR");
@@ -455,7 +456,8 @@ app.get("/nebulaTest", async function (req,res){
     return res.json();
   })
   .then(function (body) {
-    // console.log(body.data.length);
-    res.send(body)
+
+    console.log(body.data.length);
+    res.send(body.data)
   });
 })

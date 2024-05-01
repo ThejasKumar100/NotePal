@@ -205,65 +205,67 @@ function App(props) {
         <div className='motto'>
         Your Professor Doesn't Need to Know
         </div>
-        <div className='inputContainer'>
-          <div className="searchIconCont" onClick={() => {inputRef.focus();}}>
-            <SearchIcon className='searchIcon'/>
-          </div>
-          {
-            classes == null ?
-            <Autocomplete
-                filterOptions={filterOptions}
-                sx={{
-                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                    padding: "0 0 0 0",
-                },
-                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                    border: "0",
-                },
-                "& .MuiOutlinedInput-root":{
-                padding: 0,
-            },
-                }}
-                className='input'
-                disablePortal
-                onChange={(e, v) => console.log(v)}
-                options={[{"label": "loading"}]}
-                // ref={inputRef}
-                renderInput={(params) => <TextField {...params} placeholder={"Fetching Data..."} inputRef={input => {inputRef = input}}/>}
-                // ListboxProps={{background: 'black'}}
-                PaperComponent={CustomPaper}
-            />
-            :
-            <Autocomplete
-                filterOptions={filterOptions}
-                sx={{
-                '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
-                    padding: "0 0 0 0",
-                },
-                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
-                    border: "0",
-                },
-                "& .MuiOutlinedInput-root":{
-                padding: 0,
-            },
-                }}
-                className='input'
-                disablePortal
-                onChange={(e, v, r) => props.setSubmitValue(v)}
-                options={classes}
-                // ref={inputRef}
-                renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
-                // ListboxProps={{background: 'black'}}
-                PaperComponent={CustomPaper}
-            />
-          }
-        </div>
+
+<div className='inputContainer'>
+  <div className="searchIconCont" onClick={() => {inputRef.focus();}}>
+    <SearchIcon className='searchIcon'/>
+  </div>
+  {classes == null ?
+    // Rendering Autocomplete with loading state
+    <Autocomplete
+      filterOptions={filterOptions}
+      sx={{
+        '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+          padding: "0 0 0 0",
+        },
+        "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
+          border: "0",
+        },
+        "& .MuiOutlinedInput-root":{
+          padding: 0,
+        },
+      }}
+      className='input'
+      disablePortal
+      onChange={(e, v) => console.log(v)}
+      options={[{"label": "loading"}]}
+      renderInput={(params) => <TextField {...params} placeholder={"Fetching Data..."} inputRef={input => {inputRef = input}}/>}
+      PaperComponent={CustomPaper}
+    />
+  :
+
+
+    // Rendering Autocomplete with fetched data
+    <Autocomplete
+      filterOptions={filterOptions}
+      sx={{
+        '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+          padding: "0 0 0 0",
+        },
+        "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":{
+          border: "0",
+        },
+        "& .MuiOutlinedInput-root":{
+          padding: 0,
+        },
+      }}
+      className='input'
+      disablePortal
+      onChange={(e, v, r) => props.setSubmitValue(v)}
+      options={classes}
+      renderInput={(params) => <TextField {...params} placeholder={placeholder} inputRef={input => {inputRef = input}}/>}
+      PaperComponent={CustomPaper}
+    />
+  }
+</div>
       </div>
       <div className="credits">
         Made with the keyboards and mice of <b>ΘTA</b>, a UTD Professional Engineering Organization <br/>
         Powered by <a href="https://www.utdnebula.com/" target='_blank'>Nebula Labs</a> <br/>
         Built by the NotePal Team
       </div>
+
+      
       <div className="uploadButton" onClick={() => {setUploadButton(!uploadButtonPressed)}}>
             <AddRoundedIcon style={{fontSize:'42px', color:'#3B1910'}}/>
       </div>
@@ -272,7 +274,7 @@ function App(props) {
         <div className="formContainer" onClick={(e) => {e.stopPropagation();}}>
           <div className="formHeader">
             <div className="formHeaderTitle">
-                Note Upload
+                <b>Upload</b>
             </div>
             <div className='xContainer' onClick={() => {setUploadButton(!uploadButtonPressed);clearUploads();}}>
               <CloseRoundedIcon className='xIcon' style={{fontSize:'42px', color:'#3B1910'}}/>
@@ -281,10 +283,11 @@ function App(props) {
           <div className="uploadInformation">
             <div className="uploadCriteriaInput course_prefix"><UploadInput content={coursePrefix} setContent={setCoursePrefix} rerender={rerender} url={'course_prefix'} placeholder={"Course Prefix"}/></div>
             <div className="uploadCriteriaInput class_number"><UploadInput clearValue={coursePrefix == null ? true : false} disabled={coursePrefix == null ? true : false} content={classNumber} setContent={setClassNumber} rerender={rerender} url={'class_number'} placeholder={"Course Number"}/></div>
-            <div className="uploadCriteriaInput section"><UploadInput disabled={coursePrefix == null || classNumber == null ? true : false} content={section} setContent={setSection} rerender={rerender} url={'section'} placeholder={"Section Number"}/></div>
             <div className="uploadCriteriaInput instructor"><UploadInput content={instructor} setContent={setInstructor} rerender={rerender} url={'instructor'} placeholder={"Instructor(s)"}/></div>
-            <div className="uploadCriteriaInput term"><UploadInput disabled={coursePrefix == null || classNumber == null || section == null ? true : false} content={term} setContent={setTerm} rerender={rerender} url={'term'} placeholder={"Term"}/></div>
-            <div className="uploadCriteriaInput tags"><UploadInput content={tags} setContent={setTags} rerender={rerender} url={'tags'} placeholder={"Tags"}/></div>
+           
+           
+            <div class="tags" className="uploadCriteriaInput tags"><UploadInput content={tags} setContent={setTags} rerender={rerender} url={'tags'} placeholder={"Tags"}/></div>
+            
             {
               isLoading ?
               <div className="submit loading">{<loading-bounce size="40"></loading-bounce>}</div> :
@@ -298,11 +301,11 @@ function App(props) {
               : 
               <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
                 <input accept="image/png, image/jpg, image/jpeg" onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);console.log(e.target.files[0])}} ref={input => uploadRef = input} hidden type='file'/>
-                <div className="callDrop">Drop Files Here</div>
+                <div className="callDrop">Drop Your Files Here</div>
                 <div className="imageIconContainer">
                     <ImageIcon style={{fontSize:'126px', color:'#3B1910'}}/>
                 </div>
-                <div className="inputButton" onClick={()=>{uploadRef.click()}}>Search for Notes</div>
+                <div className="inputButton" onClick={()=>{uploadRef.click()}}>Open Files</div>
               </div>
               }
               {
@@ -315,7 +318,6 @@ function App(props) {
               }
           </div>
         </div>
-
       </div>
       : null}
     </div>
