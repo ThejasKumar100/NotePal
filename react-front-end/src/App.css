@@ -266,9 +266,7 @@
     grid-template-areas:
       "input1"
       "input2"
-      "input3"
       "input4"
-      "input5"
       "input6"
       "submit"
       "filedrop";
@@ -283,9 +281,7 @@
     grid-template-areas:
       "input1"
       "input2"
-      "input3"
       "input4"
-      "input5"
       "input6"
       "submit"
       "filedrop";
@@ -318,9 +314,7 @@
     grid-template-areas:
       "input1"
       "input2"
-      "input3"
       "input4"
-      "input5"
       "input6"
       "submit"
       "filedrop";
@@ -465,6 +459,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   flex-direction: row;
   font-family: "Oswald";
   font-weight: bold;
@@ -528,7 +523,7 @@
   padding-right: 3%;
 }
 
-@media screen and (max-width: 500px){
+@media screen and (max-width: 1200px){
   .container{
     display: flex;
     align-items: center;
@@ -631,7 +626,7 @@
     flex: 1;
     /* border: 1px solid red; */
 
-    display: block;
+    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: row;
@@ -643,7 +638,7 @@
     flex: 3;
     /* border: 1px solid blue; */
 
-    display: block;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding-left: 10px;
@@ -671,14 +666,16 @@
     /* border: 1px solid blue; */
     display: grid;
     grid-template-areas:
-      "input1"
-      "input2"
-      "input4"
-      "input6";
+    "input1"
+    "input2"
+    "input4"
+    "input6"
+    "submit"
+    "filedrop";
     align-items: center;
     /* justify-items: center; */
     /* column-gap: 40px; */
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: 1fr;
   
   }
   .section{
@@ -702,10 +699,11 @@
     align-self: center;
     flex-direction: column;
     overflow: hidden;
+    padding: 10px 0px;
     /* padding: 1%; */
   }
   .submit{
-    display: none;
+    width: fit-content;
   }
 }
 html{
