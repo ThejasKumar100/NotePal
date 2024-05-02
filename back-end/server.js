@@ -67,10 +67,7 @@ retrieveSecrets().then((result) =>{
     database: secrets[4],
   });
 
-  server = app.listen(4545, function () {
-    let host = server.address().address;
-    let port = server.address().port;
-  }); 
+  server = app.listen(4545, ()=>{}); 
 
   con.connect(function (error) {
     if (error) {
