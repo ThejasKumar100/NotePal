@@ -6,6 +6,7 @@
     "cors": "^2.8.5",
     "express-fileupload": "^1.4.3",
     "mui": "^0.0.1",
-    "multistream": "^4.1.0"
+    "multistream": "^4.1.0",
+    "process": "^0.11.10"
   }
 }

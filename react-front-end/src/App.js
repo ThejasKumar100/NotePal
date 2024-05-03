@@ -178,6 +178,9 @@ function App(props) {
     setRerender(!rerender);
   }
   let uploadInfo = () =>{
+    if (!rawFile){
+      setMessageValue("Please attach a file!")
+    }
     setLoading(true);
     var data = new FormData();
     data.append('file', rawFile)

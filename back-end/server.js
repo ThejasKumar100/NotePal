@@ -38,6 +38,24 @@ let client;
 let refresh;
 
 setInterval(async ()=>{
+  retrieveSecrets().then((result) =>{
+    secrets = result;
+  
+    con = mysql.createConnection({
+      host: secrets[1],
+      user: secrets[2],
+      password: secrets[3],
+      database: secrets[4],
+    });
+    con.connect(function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("connection successful");
+      }
+    });
+  });
+
   const authenticationUrl = "https://api.box.com/oauth2/token";
 
   let tokens = await axios
@@ -121,7 +139,7 @@ function SQLequivalenceFormat(value){
 
 function checkExistence(coursePrefix, classNumber, section, instructor){
   return new Promise((resolve, reject) =>{
-    let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND section ${SQLequivalenceFormat(section)} AND instructor ${SQLequivalenceFormat(instructor)}`;
+    let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND section ${SQLequivalenceFormat(section)} AND instructor ${instructor == "undefined" ?  "IS NULL" : "LIKE '%" + instructor +"%'"}`;
     console.log(SQLquery);
     con.query(SQLquery, function (error, results, fields) {
         if (error) reject(error);
