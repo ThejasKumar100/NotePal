@@ -40,7 +40,7 @@ function UploadInput(props) {
   let inputRef = useRef();
   const [options, setOptions] = useState([]);
   useEffect(() => {
-    fetch(`http://localhost:4545/generalInformation/${props.url}`)
+    fetch(`http://72.182.162.132:4545/generalInformation/${props.url}`)
     .then((response) => response.json())
     .then((data) => {
     console.log(data);
@@ -129,7 +129,7 @@ function App(props) {
         clearUploads();
       }
     })
-    fetch('http://localhost:4545/searchFormat')
+    fetch('http://72.182.162.132:4545/searchFormat')
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
@@ -181,7 +181,7 @@ function App(props) {
     setLoading(true);
     var data = new FormData();
     data.append('file', rawFile)
-    fetch(`http://localhost:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor};${term};${tags}`, {
+    fetch(`http://72.182.162.132:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor};${term};${tags}`, {
       method: 'POST',
       body: data
     }).then((response) =>{
@@ -193,7 +193,7 @@ function App(props) {
         clearForm();
       }
     }).catch((error) =>{
-      console.log(`http://localhost:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
+      console.log(`http://72.182.162.132:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
     }).finally(() => setLoading(false))
   }
   return (
@@ -303,7 +303,7 @@ function App(props) {
                 <input accept="image/png, image/jpg, image/jpeg" onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);console.log(e.target.files[0])}} ref={input => uploadRef = input} hidden type='file'/>
                 <div className="callDrop">Drop Your Files Here</div>
                 <div className="imageIconContainer">
-                    <ImageIcon style={{fontSize:'126px', color:'#3B1910'}}/>
+                    <ImageIcon style={{fontSize:'98px', color:'#3B1910'}}/>
                 </div>
                 <div className="inputButton" onClick={()=>{uploadRef.click()}}>Open Files</div>
               </div>

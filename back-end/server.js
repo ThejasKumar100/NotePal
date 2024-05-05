@@ -35,9 +35,26 @@ let con;
 let server;
 let sdk;
 let client;
-let refresh;
+let refresh = "B4r1mAHlbpH45xDqCERmrZNFPSE4FsOOfwSo8QhFkDe1JQn8prSYImnM65G9w6Zq";
 
 setInterval(async ()=>{
+  retrieveSecrets().then((result) =>{
+    secrets = result;
+  
+    con = mysql.createConnection({
+      host: secrets[1],
+      user: secrets[2],
+      password: secrets[3],
+      database: secrets[4],
+    });
+    con.connect(function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("connection successful");
+      }
+    });
+  });
   const authenticationUrl = "https://api.box.com/oauth2/token";
 
   let tokens = await axios
@@ -55,7 +72,7 @@ setInterval(async ()=>{
   refresh = tokens.refresh_token
   client = sdk.getBasicClient(tokens.access_token)
 
-}, 1000*60*30)
+}, 1000*60*15)
 
 retrieveSecrets().then((result) =>{
   secrets = result;
@@ -67,10 +84,7 @@ retrieveSecrets().then((result) =>{
     database: secrets[4],
   });
 
-  server = app.listen(4545, function () {
-    let host = server.address().address;
-    let port = server.address().port;
-  }); 
+  server = app.listen(4545, ()=>{}); 
 
   con.connect(function (error) {
     if (error) {
@@ -85,7 +99,7 @@ retrieveSecrets().then((result) =>{
     clientSecret: secrets[6]
   });
   //Developer Token
-  client = sdk.getBasicClient('VzzfHtOT4QdFOaZGZwSlCrJbZFR02G8j');
+  client = sdk.getBasicClient('71g09vmuCXkop9GLZN1xt8cIk7Os0hqU');
 })
 
 const cors=require("cors");
@@ -124,8 +138,8 @@ function SQLequivalenceFormat(value){
 
 function checkExistence(coursePrefix, classNumber, section, instructor){
   return new Promise((resolve, reject) =>{
-    let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND section ${SQLequivalenceFormat(section)} AND instructor ${SQLequivalenceFormat(instructor)}`;
-    console.log(SQLquery);
+    let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND section ${SQLequivalenceFormat(section)} AND instructor ${instructor == "undefined" ?  "IS NULL" : "LIKE '%" + instructor.replaceAll(';', "\\;") +"%'"}`;
+    console.log(`${SQLquery}`);
     con.query(SQLquery, function (error, results, fields) {
         if (error) reject(error);
         else {
@@ -255,7 +269,7 @@ function retrieveUploadID(ObjArray){
 //possible bug: a file with the same name as another uploaded will result in an error
 app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async function(req, res){
   // Will show as undefined if unavailable
-  console.log(req.params.coursePrefix, req.params.classNumber, req.params.section, req.params.instructor);
+  console.log(req.params.instructor["label"]);
   let coursePrefix = req.params.coursePrefix === "undefined" || req.params.coursePrefix === "null" ? "undefined" : JSON.parse(req.params.coursePrefix)["label"];
   let classNumber = req.params.classNumber === "undefined" || req.params.classNumber === "null" ? "undefined" : JSON.parse(req.params.classNumber)["label"];
   let section = req.params.section === "undefined" || req.params.section === "null" ? "undefined" : JSON.parse(req.params.section)["label"];
@@ -288,7 +302,9 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
         Arr[index] = element.toLowerCase();
       }
     })
-    checkExistence(coursePrefix, classNumber, section, instructor).then(async (results) =>{
+    checkExistence(coursePrefix, classNumber, section, instructor)
+    .then(async (results) =>{
+      console.log(results)
       let class_id = results[0].class_id;
       let fileName = new Date().toJSON();
       let file = req.files.file.data;
@@ -313,30 +329,30 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
   }
 });
 
-app.get("/test", async function(req, res){
-  res.redirect("https://account.box.com/api/oauth2/authorize?client_id=hkoogqpabx0z8kb1m5u5dcmpo33mkzit&response_type=code&redirect_uri=http://localhost:4545/test2")
-  // res.send("SUCCESS")
-})
-
-app.get("/test2", async function(req, res){
-  const authenticationUrl = "https://api.box.com/oauth2/token";
-
-  let tokens = await axios
-  .post(
-    authenticationUrl,
-    qs.stringify({
-      grant_type: "authorization_code",
-      code: req.query.code,
-      client_id: "hkoogqpabx0z8kb1m5u5dcmpo33mkzit",
-      client_secret: "pw7HV0LTmyhFt2itiBY0xwNSIrsfgdyx",
-    })
-  )
-  .then((response) => response.data);
-  console.log(tokens)
-  refresh = tokens.refresh_token
-  client = sdk.getBasicClient(tokens.access_token)
-  res.send("Success")
-})
+// app.get("/test", async function(req, res){
+//   res.redirect("https://account.box.com/api/oauth2/authorize?client_id=hkoogqpabx0z8kb1m5u5dcmpo33mkzit&response_type=code&redirect_uri=http://http://72.182.162.132:4545/test2")
+//   // res.send("SUCCESS")
+// })
+// 
+// app.get("/test2", async function(req, res){
+//   const authenticationUrl = "https://api.box.com/oauth2/token";
+// 
+//   let tokens = await axios
+//   .post(
+//     authenticationUrl,
+//     qs.stringify({
+//       grant_type: "authorization_code",
+//       code: req.query.code,
+//       client_id: "hkoogqpabx0z8kb1m5u5dcmpo33mkzit",
+//       client_secret: "pw7HV0LTmyhFt2itiBY0xwNSIrsfgdyx",
+//     })
+//   )
+//   .then((response) => response.data);
+//   console.log(tokens)
+//   refresh = tokens.refresh_token
+//   client = sdk.getBasicClient(tokens.access_token)
+//   res.send("Success")
+// })
 
 app.get("/getUploadID/:searchQuery", async function(req, res){
   if (req.params.searchQuery === 'random'){

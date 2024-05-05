@@ -41,7 +41,7 @@ function CardResult(props){
   }
   useEffect(() =>{
     document.addEventListener("keydown", escFunction, false);
-    fetch(`http://localhost:4545/getFile/${props.uploadID}`)
+    fetch(`http://72.182.162.132:4545/getFile/${props.uploadID}`)
     .then(response => response.blob())
     .then((data) =>{
       setImage(URL.createObjectURL(data));
@@ -92,7 +92,7 @@ function SearchResults(props){
     let [cardArray, setCardArray] = useState([]);
     let [placeholder, setPlaceholder] = useState();
     useEffect(() =>{
-      fetch('http://localhost:4545/searchFormat')
+      fetch('http://72.182.162.132:4545/searchFormat')
       .then((response) => response.json())
       .then((data) => {
         // console.log(data);
@@ -107,7 +107,7 @@ function SearchResults(props){
       }
     }, [activePage, uploadArray])
     useEffect(() =>{
-      fetch(`http://localhost:4545/getFileInfo/${JSON.stringify(activeUploads)}`)
+      fetch(`http://72.182.162.132:4545/getFileInfo/${JSON.stringify(activeUploads)}`)
       .then((response)=> response.json())
         .then((data) =>{
           setCardArray([])
@@ -120,7 +120,7 @@ function SearchResults(props){
       console.log(`Search Value: ${searchValue}`);
       setCardArray([])
       if(searchValue != null){
-        fetch(`http://localhost:4545/getUploadID/${searchValue["label"]}`)
+        fetch(`http://72.182.162.132:4545/getUploadID/${searchValue["label"]}`)
         .then((response) => response.json())
         .then((data) => {
           setUploadArray(data);
@@ -129,7 +129,7 @@ function SearchResults(props){
           // console.log(`active uploads: ${activeUploads}\nactive page: ${activePage}\nnumber of pages: ${numberOfPages}\nupload array: ${uploadArray.slice(15*(activePage - 1), uploadArray.length)}\ndata: ${data}`);
           // return data;
         })
-        // .then((uploadID) => fetch(`http://localhost:4545/getFileInfo/${JSON.stringify(uploadID)}`))
+        // .then((uploadID) => fetch(`http://72.182.162.132:4545/getFileInfo/${JSON.stringify(uploadID)}`))
         // .then((response)=> response.json())
         // .then((data) =>{
         //   setCardArray([])
