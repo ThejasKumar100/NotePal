@@ -179,12 +179,25 @@ function App(props) {
   }
   let uploadInfo = () =>{
     if (!rawFile){
+      setNotification(true);
       setMessageValue("Please attach a file!")
+      return
+    }
+    if (!rawFile){
+      setNotification(true);
+      setMessageValue("Please attach a file!")
+      return
+    }
+    if (!rawFile){
+      setNotification(true);
+      setMessageValue("Please attach a file!")
+      return
     }
     setLoading(true);
     var data = new FormData();
     data.append('file', rawFile)
-    fetch(`http://72.182.162.132:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor};${term};${tags}`, {
+    console.log(instructor)
+    fetch(`http://72.182.162.132:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor.replaceAll(';', '%3B')};${term};${tags}`, {
       method: 'POST',
       body: data
     }).then((response) =>{

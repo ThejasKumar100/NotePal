@@ -90,6 +90,15 @@
   flex-direction: row;
   margin: 3.5%;
   }
+  .sr-name{
+    display: none;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .sr-icon{
+    font-size: 3rem;
+  }
 }
 
 @media screen and (min-width: 1024px) {
@@ -327,14 +336,6 @@
   .uploadInformation {
     grid-template-columns: 1fr 1fr;
     column-gap: 20px;
-  }
-}
-
-/* Media Query for larger screens */
-@media screen and (min-width: 1024px) {
-  .uploadInformation {
-    grid-template-columns: 1fr 1fr 1.5fr;
-    column-gap:20px;
   }
 }
 
@@ -733,7 +734,7 @@ html{
   justify-content: flex-start;
   padding-left: 20px;
   padding-right: 20px;
-  gap: 14.3%;
+  /* gap: 14.3%; */
 }
 .sr-inputContainer{
   /* width: 50%; */
@@ -747,7 +748,7 @@ html{
   border: 2px solid var(--secondary);
   flex-direction: row;
   align-self: center;
-  /* margin-left: 15%; */
+  margin: 0 5%;
 }
 .sr-searchIconCont{
   flex:1;
@@ -791,17 +792,37 @@ html{
   cursor: pointer;
 
 }.sr-headerFiller {
-  flex: 2;
+  /* flex: 2; */
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 5%; /* Decreased the gap for smaller screens */
 
   /* Additional adjustments for smaller screens */
-  flex-direction: column; /* Adjusted to column layout */
+}
+
+@media screen and (max-width: 1333px) {
+  /* .uploadInformation {
+    grid-template-columns: 1fr 1fr 1.5fr;
+    column-gap:20px;
+  } */
+  .sr-cardContainer > .sr-card{
+    width: calc(0.45 * 0.9 * 100vw);
+  }
+}
+@media screen and (max-width: 888px) {
+  /* .uploadInformation {
+    grid-template-columns: 1fr 1fr 1.5fr;
+    column-gap:20px;
+  } */
+  .sr-cardContainer > .sr-card{
+    width: calc(0.9 * 100vw);
+  }
 }
 
 @media screen and (max-width: 768px) {
+
   .sr-headerFiller {
     /* Adjustments for even smaller screens */
     gap: 3%; /* Further decreased the gap */
@@ -841,18 +862,21 @@ html{
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 .sr-cardContainer{
   padding-top: 20px;
   padding-bottom: 20px;
   width: 90%;
-  height: 100%;
+  min-height: 100%;
   flex-direction: row;
   flex-wrap: wrap;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   align-content: flex-start;
+  position: absolute;
+  top: 0;
 }
 .sr-card{
   margin: 20px;
