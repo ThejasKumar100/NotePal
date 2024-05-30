@@ -93,11 +93,18 @@
   .sr-name{
     display: none;
   }
+  .sr-imageContainer{
+    width: calc(10vh - 17px)
+  }
 }
 
 @media screen and (max-width: 620px) {
-  .sr-icon{
-    font-size: 3rem;
+  .sr-app > .sr-header{
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .sr-headerFiller > .sr-icon{
+    font-size: 2rem;
   }
 }
 
@@ -549,6 +556,7 @@
   }
   .motto{
     padding-bottom: 1vh;
+    text-align: center;
     animation-name: fade-in;
     animation-duration: 2s;
     font-family: 'Lato';
@@ -715,7 +723,7 @@ html{
   position: relative;
   background-color: var(--primary);
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -724,7 +732,7 @@ html{
   padding-bottom: 20px;
 }
 .sr-header{
-  width: 95%;
+  width: 95vw;
   height: 10%;
   display: flex;
   flex-direction: row;
@@ -830,6 +838,7 @@ html{
 }
 .sr-icon{
   color: var(--tertiary);
+  font-size:  4rem;
 }
 .sr-icon:hover{
   cursor: pointer;
@@ -915,6 +924,9 @@ html{
   font-weight: bold;
   font-size: 1.6rem;
   padding-left: 10%;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
 }
 .sr-thumbnailCont{
   width: 30%;
@@ -941,7 +953,7 @@ html{
   backdrop-filter: blur(10px);
   height: 100%;
   width: 100%;
-  position: absolute;
+  position: fixed;
   transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
   animation-name: fade-in;
   animation-duration: 0.5s;
@@ -952,6 +964,8 @@ html{
 .sr-fullScreenImage{
   object-fit: contain;
   height: 80%;
+  width: 100%;
+  padding: 0 10px;
 }
 
 @keyframes fade-in{

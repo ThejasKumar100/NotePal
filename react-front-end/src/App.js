@@ -40,7 +40,7 @@ function UploadInput(props) {
   let inputRef = useRef();
   const [options, setOptions] = useState([]);
   useEffect(() => {
-    fetch(`http://72.182.162.132:4545/generalInformation/${props.url}`)
+    fetch(`http://72.182.168.47:4545/generalInformation/${props.url}`)
     .then((response) => response.json())
     .then((data) => {
     console.log(data);
@@ -129,7 +129,7 @@ function App(props) {
         clearUploads();
       }
     })
-    fetch('http://72.182.162.132:4545/searchFormat')
+    fetch('http://72.182.168.47:4545/searchFormat')
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
@@ -197,7 +197,7 @@ function App(props) {
     var data = new FormData();
     data.append('file', rawFile)
     console.log(instructor)
-    fetch(`http://72.182.162.132:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor.replaceAll(';', '%3B')};${term};${tags}`, {
+    fetch(`http://72.182.168.47:4545/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor.replaceAll(';', '%3B')};${term};${tags}`, {
       method: 'POST',
       body: data
     }).then((response) =>{
@@ -209,7 +209,7 @@ function App(props) {
         clearForm();
       }
     }).catch((error) =>{
-      console.log(`http://72.182.162.132:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
+      console.log(`http://72.182.168.47:4545/uploadSearchParameters/${coursePrefix}-${classNumber}-${section}-${instructor}-${term}-${tags}`)
     }).finally(() => setLoading(false))
   }
   return (
@@ -242,6 +242,10 @@ function App(props) {
         },
       }}
       className='input'
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left"
+      }}
       disablePortal
       onChange={(e, v) => console.log(v)}
       options={[{"label": "loading"}]}
@@ -249,8 +253,6 @@ function App(props) {
       PaperComponent={CustomPaper}
     />
   :
-
-
     // Rendering Autocomplete with fetched data
     <Autocomplete
       filterOptions={filterOptions}
@@ -265,6 +267,7 @@ function App(props) {
           padding: 0,
         },
       }}
+      
       className='input'
       disablePortal
       onChange={(e, v, r) => props.setSubmitValue(v)}

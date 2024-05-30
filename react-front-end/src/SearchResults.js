@@ -15,6 +15,14 @@ const filterOptions = createFilterOptions({
   limit: 150,
 });
 
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height
+  };
+}
+
 const CustomPaper = ({children}) => {
     return(
       <Paper className="paper"  style={{background:"#FCE8C6", border:"2px #C67143 solid", boxShadow: "0px 0px 5px rgba(198,113,67, 0.8)"}} sx={{
@@ -41,7 +49,7 @@ function CardResult(props){
   }
   useEffect(() =>{
     document.addEventListener("keydown", escFunction, false);
-    fetch(`http://72.182.162.132:4545/getFile/${props.uploadID}`)
+    fetch(`http://72.182.168.47:4545/getFile/${props.uploadID}`)
     .then(response => response.blob())
     .then((data) =>{
       setImage(URL.createObjectURL(data));
@@ -89,10 +97,12 @@ function SearchResults(props){
     let [activeUploads, setActiveUploads] = useState([]);
     let [numberOfPages, setNumberOfPages] = useState();
     let [activePage, setActivePage] = useState(1);
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     let [cardArray, setCardArray] = useState([]);
     let [placeholder, setPlaceholder] = useState();
     useEffect(() =>{
-      fetch('http://72.182.162.132:4545/searchFormat')
+      console.log(windowDimensions.width)
+      fetch('http://72.182.168.47:4545/searchFormat')
       .then((response) => response.json())
       .then((data) => {
         // console.log(data);
@@ -107,7 +117,7 @@ function SearchResults(props){
       }
     }, [activePage, uploadArray])
     useEffect(() =>{
-      fetch(`http://72.182.162.132:4545/getFileInfo/${JSON.stringify(activeUploads)}`)
+      fetch(`http://72.182.168.47:4545/getFileInfo/${JSON.stringify(activeUploads)}`)
       .then((response)=> response.json())
         .then((data) =>{
           setCardArray([])
@@ -120,7 +130,7 @@ function SearchResults(props){
       console.log(`Search Value: ${searchValue}`);
       setCardArray([])
       if(searchValue != null){
-        fetch(`http://72.182.162.132:4545/getUploadID/${searchValue["label"]}`)
+        fetch(`http://72.182.168.47:4545/getUploadID/${searchValue["label"]}`)
         .then((response) => response.json())
         .then((data) => {
           setUploadArray(data);
@@ -129,7 +139,7 @@ function SearchResults(props){
           // console.log(`active uploads: ${activeUploads}\nactive page: ${activePage}\nnumber of pages: ${numberOfPages}\nupload array: ${uploadArray.slice(15*(activePage - 1), uploadArray.length)}\ndata: ${data}`);
           // return data;
         })
-        // .then((uploadID) => fetch(`http://72.182.162.132:4545/getFileInfo/${JSON.stringify(uploadID)}`))
+        // .then((uploadID) => fetch(`http://72.182.168.47:4545/getFileInfo/${JSON.stringify(uploadID)}`))
         // .then((response)=> response.json())
         // .then((data) =>{
         //   setCardArray([])
@@ -204,8 +214,8 @@ function SearchResults(props){
               }
             </div>
             <div className='sr-headerFiller'>
-              <KeyboardArrowLeftIcon style={{fontSize: "4rem"}} className={`sr-icon ${activePage > 1 ? null : "sr-disabled"}`}/>
-              <KeyboardArrowRightIcon style={{fontSize: "4rem"}} className={`sr-icon ${numberOfPages > activePage ? null : "sr-disabled"}`}/>
+              <KeyboardArrowLeftIcon style = {{fontSize: windowDimensions.width > 620 ? "4rem" : "2rem"}} className={`sr-icon ${activePage > 1 ? null : "sr-disabled"}`}/>
+              <KeyboardArrowRightIcon style = {{fontSize: windowDimensions.width > 620 ? "4rem" : "2rem"}} className={`sr-icon ${numberOfPages > activePage ? null : "sr-disabled"}`}/>
             </div>
           </div>
           <div className="sr-sep"></div>
