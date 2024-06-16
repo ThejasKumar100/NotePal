@@ -49,7 +49,7 @@ function CardResult(props){
   }
   useEffect(() =>{
     document.addEventListener("keydown", escFunction, false);
-    fetch(`http://72.182.168.47:4545/getFile/${props.uploadID}`)
+    fetch(`https://node.asharalvany.com/getFile/${props.uploadID}`)
     .then(response => response.blob())
     .then((data) =>{
       setImage(URL.createObjectURL(data));
@@ -102,7 +102,7 @@ function SearchResults(props){
     let [placeholder, setPlaceholder] = useState();
     useEffect(() =>{
       console.log(windowDimensions.width)
-      fetch('http://72.182.168.47:4545/searchFormat')
+      fetch('https://node.asharalvany.com/searchFormat')
       .then((response) => response.json())
       .then((data) => {
         // console.log(data);
@@ -117,7 +117,7 @@ function SearchResults(props){
       }
     }, [activePage, uploadArray])
     useEffect(() =>{
-      fetch(`http://72.182.168.47:4545/getFileInfo/${JSON.stringify(activeUploads)}`)
+      fetch(`https://node.asharalvany.com/getFileInfo/${JSON.stringify(activeUploads)}`)
       .then((response)=> response.json())
         .then((data) =>{
           setCardArray([])
@@ -130,7 +130,7 @@ function SearchResults(props){
       console.log(`Search Value: ${searchValue}`);
       setCardArray([])
       if(searchValue != null){
-        fetch(`http://72.182.168.47:4545/getUploadID/${searchValue["label"]}`)
+        fetch(`https://node.asharalvany.com/getUploadID/${searchValue["label"]}`)
         .then((response) => response.json())
         .then((data) => {
           setUploadArray(data);
