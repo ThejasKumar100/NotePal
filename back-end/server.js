@@ -49,23 +49,17 @@ let client;
 let refresh;
 
 async function connEst() {
-  retrieveSecrets().then((result) => {
-    secrets = result;
-
-    con = mysql.createConnection({
-      host: secrets[1],
-      user: secrets[2],
-      password: secrets[3],
-      database: secrets[4],
-    });
-    con.connect(function (error) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("connection successful");
-      }
-    });
-  });
+  // retrieveSecrets().then((result) => {
+    // secrets = result;
+    con.query("SELECT  1;");
+    // con.connect(function (error) {
+    //   if (error) {
+    //     console.log(error);
+    //   } else {
+    //     console.log("connection successful");
+    //   }
+    // });
+  // });
   const authenticationUrl = "https://api.box.com/oauth2/token";
 
   let tokens = await axios
@@ -79,7 +73,7 @@ async function connEst() {
       })
     )
     .then((response) => response.data);
-  console.log("TIME: ", new Date(Date.now()).toUTCString())
+  console.log("TIME: ", new Date(Date.now()).toLocaleString('en-US', { timeZone: 'America/Chicago' }))
   console.log(tokens)
   refresh = tokens.refresh_token
   client = sdk.getBasicClient(tokens.access_token)
@@ -99,12 +93,12 @@ server = app.listen(4545, () => { });
 retrieveSecrets().then((result) => {
   secrets = result;
 
-  //   con = mysql.createConnection({
-  //     host: secrets[1],
-  //     user: secrets[2],
-  //     password: secrets[3],
-  //     database: secrets[4],
-  //   });
+    con = mysql.createConnection({
+      host: secrets[1],
+      user: secrets[2],
+      password: secrets[3],
+      database: secrets[4],
+    });
 
   //   server = app.listen(4545, ()=>{}); 
 
@@ -238,6 +232,16 @@ function retrieveClassInfo(upload_id) {
 
 function retrieveUploadIDFromTags(tag_name) {
   return new Promise((res, rej) => {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      "/": '&#x2F;',
+  };
+  const reg = /[&<>"'/]/ig;
+  tag_name = tag_name.replace(reg, (match)=>(map[match]));
     let SQLquery = `SELECT upload_id FROM uploads WHERE tag_name_1 LIKE '%${tag_name}%' OR tag_name_2 LIKE '%${tag_name}%' OR tag_name_3 LIKE '%${tag_name}%' OR tag_name_4 LIKE '%${tag_name}%' OR tag_name_5 LIKE '%${tag_name}%' OR tag_name_6 LIKE '%${tag_name}%' OR tag_name_7 LIKE '%${tag_name}%' OR tag_name_8 LIKE '%${tag_name}%' OR tag_name_9 LIKE '%${tag_name}%' OR tag_name_10 LIKE '%${tag_name}%' OR tag_name_11 LIKE '%${tag_name}%' OR tag_name_12 LIKE '%${tag_name}%' OR tag_name_13 LIKE '%${tag_name}%' OR tag_name_14 LIKE '%${tag_name}%' OR tag_name_15 LIKE '%${tag_name}%';`;
     con.query(SQLquery, function (error, results, fields) {
       if (error) rej(error);
@@ -291,7 +295,8 @@ function retrieveUploadID(ObjArray) {
 //possible bug: a file with the same name as another uploaded will result in an error
 app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async function (req, res) {
   if (!var_ready) {
-    res.send("Not Authenticated");
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify("Not Authenticated"));
     return;
   }
   // Will show as undefined if unavailable
@@ -299,59 +304,81 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
   let coursePrefix = req.params.coursePrefix === "undefined" || req.params.coursePrefix === "null" ? "undefined" : JSON.parse(req.params.coursePrefix)["label"];
   let classNumber = req.params.classNumber === "undefined" || req.params.classNumber === "null" ? "undefined" : JSON.parse(req.params.classNumber)["label"];
   let section = req.params.section === "undefined" || req.params.section === "null" ? "undefined" : JSON.parse(req.params.section)["label"];
-  let instructor = req.params.instructor === "undefined" || req.params.instructor === "null" ? "undefined" : JSON.parse(req.params.instructor)["label"];
+  let instructor = req.params.instructor === "undefined" || req.params.instructor === "null" ? "undefined" : JSON.parse(req.params.instructor)["label"].replaceAll("'", "\\'");
   let term = req.params.term === "undefined" || req.params.term === "null" ? "undefined" : JSON.parse(req.params.term)["label"];
   let tags = req.params.tags === "undefined" || req.params.tags === "null" ? "undefined" : JSON.parse(req.params.tags);
   if (req.files == null) {
     res.send(JSON.stringify("Please include a file!"));
-  }
-  if (tags === "undefined") {
-    res.send(JSON.stringify("At least one tag must be present!"));
-  }
-  else {
-    let currentTags = await retrieveTagNames();
-    currentTags.forEach((element, index, arr) => {
-      arr[index] = element[Object.keys(element)[0]]
-    })
-    for (let i = 0; i < tags.length; i++) {
-      if ((typeof tags[i] === "object")) {
-        tags[i] = tags[i]["label"];
-      }
+    return
     }
-    tags.forEach((element, index, Arr) => {
-      if (!currentTags.includes(element.toLowerCase())) {
-        console.log(`current tags: ${currentTags}`);
-        console.log(`new tag: ${element}`);
-        updateTags(element.toLowerCase());
-      }
-      else {
-        Arr[index] = element.toLowerCase();
-      }
-    })
-    checkExistence(coursePrefix, classNumber, section, instructor)
-      .then(async (results) => {
-        console.log(results)
-        let class_id = results[0].class_id;
-        let fileName = new Date().toJSON();
-        let file = req.files.file.data;
-        console.log(file)
-        return [await client.files.uploadFile('240811112427', fileName, file), class_id]; //folder id
+    if (tags === "undefined") {
+      res.send(JSON.stringify("At least one tag must be present!"));
+      return
+    }
+    else {
+      console.log(tags)
+      for(let tag of tags){
+        if(typeof(tag) == "object"){
+          tag = tag["label"];
+        }
+        if(tag.length > 19){
+          console.log("tag large input");
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify("Tags must be less than 20 characters"));
+          return;
+        }
+        console.log(tag)
+        const match = tag.match(/[;*@%\-'`"]+/)
+        if(match != null){
+          console.log("tag malicious input");
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify("Tags cannot contain the following [&, @, *, $, |, %, ~, -, ', `, \", ;]"));
+          return;
+        }
+      };
+      let currentTags = await retrieveTagNames();
+      currentTags.forEach((element, index, arr) => {
+        arr[index] = element[Object.keys(element)[0]]
       })
-      .then((response) => {
-        let formattedTags = tagFormatting(tags);
-        let SQLquery = `INSERT INTO uploads VALUES(${response[1]}, ${response[0].entries[0].id}, ${formattedTags});`;
-        console.log(SQLquery);
-        con.query(SQLquery, function (error, results, fields) {
-          if (error) console.log(error);
+      for (let i = 0; i < tags.length; i++) {
+        if ((typeof tags[i] === "object")) {
+          tags[i] = tags[i]["label"];
+        }
+      }
+      tags.forEach((element, index, Arr) => {
+        if (!currentTags.includes(element.toLowerCase())) {
+          console.log(`current tags: ${currentTags}`);
+          console.log(`new tag: ${element}`);
+          updateTags(element.toLowerCase());
+        }
+        else {
+          Arr[index] = element.toLowerCase();
+        }
+      })
+      checkExistence(coursePrefix, classNumber, section, instructor)
+        .then(async (results) => {
+          console.log(results)
+          let class_id = results[0].class_id;
+          let fileName = new Date().toJSON();
+          let file = req.files.file.data;
+          console.log(file)
+          return [await client.files.uploadFile('240811112427', fileName, file), class_id]; //folder id
         })
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify("SUCCESS"));
-      })
-      .catch((error) => {
-        console.log(error);
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify("That class may not exist or try to be more specific!"));
-      })
+        .then((response) => {
+          let formattedTags = tagFormatting(tags);
+          let SQLquery = `INSERT INTO uploads VALUES(${response[1]}, ${response[0].entries[0].id}, ${formattedTags});`;
+          console.log(SQLquery);
+          con.query(SQLquery, function (error, results, fields) {
+            if (error) console.log(error);
+          })
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify("SUCCESS"));
+        })
+        .catch((error) => {
+          console.log(error);
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify("That class may not exist or try to be more specific!"));
+        })
   }
 });
 
@@ -387,7 +414,7 @@ app.get("/test2", async function (req, res) {
         })
       )
       .then((response) => response.data);
-    console.log("TIME: ", new Date(Date.now()).toUTCString())
+    console.log("TIME: ", new Date(Date.now()).toLocaleString('en-US', { timeZone: 'America/Chicago' }))
     console.log(tokens)
     refresh = tokens.refresh_token
     connEst();
@@ -420,9 +447,9 @@ app.get("/getUploadID/:searchQuery", async function (req, res) {
     // check for existence within the classes database AND tag_name database
     let upload_id;
     try {
-      upload_id = await retrieveClassID(req.params.searchQuery);
+      upload_id = await retrieveClassID(req.params.searchQuery.replaceAll("'", "\\'"));
     } catch (error) {
-      upload_id = await retrieveUploadIDFromTags(req.params.searchQuery);
+      upload_id = await retrieveUploadIDFromTags(req.params.searchQuery.replaceAll("'", "\\'"));
     }
     upload_id.forEach((element, i, arr) => {
       arr[i] = element[Object.keys(element)[0]];
