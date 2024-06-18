@@ -150,9 +150,15 @@ function App(props) {
     e.preventDefault();
     e.stopPropagation();
     
-// filename.split('.').pop()
-
+    // filename.split('.').pop()
+    
     const {files} = e.dataTransfer;
+    console.log(files[0].size)
+    if(files[0].size > 10e6){
+      setNotification(true);
+      setMessageValue("File is too large!")
+      return
+    }
     console.log(files[0]["name"].split('.').pop().toLowerCase());
     let file_ext = files[0]["name"].split('.').pop().toLowerCase();
     if (files && files.length == 1 && (file_ext === "png" || file_ext === "jpg")) {
@@ -183,6 +189,11 @@ function App(props) {
       setMessageValue("Please attach a file!")
       return
     }
+    if (rawFile.size > 10e6){
+      setNotification(true);
+      setMessageValue("File size is too large!")
+      return
+    }
     if (!coursePrefix){
       setNotification(true);
       setMessageValue("Please enter a course prefix!")
@@ -194,6 +205,7 @@ function App(props) {
       return
     }
     setLoading(true);
+    console.log("file size:", rawFile)
     var data = new FormData();
     data.append('file', rawFile)
     console.log(instructor)
@@ -319,7 +331,14 @@ function App(props) {
               </div>
               : 
               <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
-                <input accept="image/png, image/jpg, image/jpeg" onInput={(e) => {setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);console.log(e.target.files[0])}} ref={input => uploadRef = input} hidden type='file'/>
+                <input accept="image/png, image/jpg, image/jpeg" onInput={(e) => {
+                  console.log(e.target.files[0].size)
+                  if(e.target.files[0].size > 10e6){
+                    setNotification(true);
+                    setMessageValue("File is too large!")
+                    return
+                  }
+                  setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);console.log(e.target.files[0])}} ref={input => uploadRef = input} hidden type='file'/>
                 <div className="callDrop">Drop Your Files Here</div>
                 <div className="imageIconContainer">
                     <ImageIcon style={{fontSize:'98px', color:'#3B1910'}}/>

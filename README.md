@@ -40,6 +40,7 @@ npm run dev
 
 ### Current Bugs
 
-- When uploading on mobile, the black glass does not extend the entire background of the pop-up
-- On some mobile browsers, the text of the professor associated with an upload will appear visually cut-off
-- Inputting a tag and pressing upload without the remainder of upload information (Professor (Optional), course prefix (Mandatory), and course number (Mandatory)) will cause the upload to hang when it should notify to the user that the input is incomplete  
+- ~~Allows files of any size to be uploaded~~
+- ~~When uploading on mobile, the black glass does not extend the entire background of the pop-up~~
+- ~~On some mobile browsers, the text of the professor associated with an upload will appear visually cut-off~~
+- ~~Inputting a tag and pressing upload without the remainder of upload information (Professor (Optional), course prefix (Mandatory), and course number (Mandatory)) will cause the upload to hang when it should notify to the user that the input is incomplete~~  
