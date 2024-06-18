@@ -96,6 +96,12 @@
   .sr-imageContainer{
     width: calc(10vh - 17px)
   }
+  .sr-info > .sr-infoTitle{
+    font-size: 1.3rem;;
+  }
+  .sr-infoTag{
+    font-size: 1rem;;
+  }
 }
 
 @media screen and (max-width: 620px) {
@@ -448,7 +454,7 @@
 .fileDrop{
   grid-area: filedrop;
   height: 90%;
-  /* aspect-ratio: 1/1; */
+  aspect-ratio: 1/1;
   /* padding-bottom: 80%; */
   width: 80%;
   display: flex;

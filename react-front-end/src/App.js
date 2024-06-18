@@ -183,14 +183,14 @@ function App(props) {
       setMessageValue("Please attach a file!")
       return
     }
-    if (!rawFile){
+    if (!coursePrefix){
       setNotification(true);
-      setMessageValue("Please attach a file!")
+      setMessageValue("Please enter a course prefix!")
       return
     }
-    if (!rawFile){
+    if (!classNumber){
       setNotification(true);
-      setMessageValue("Please attach a file!")
+      setMessageValue("Please enter a course number!")
       return
     }
     setLoading(true);
