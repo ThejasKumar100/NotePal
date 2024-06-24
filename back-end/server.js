@@ -94,6 +94,10 @@ retrieveSecrets().then((result) => {
   secrets = result;
 
     pool = mysql.createPool({
+      connectionLimit: 1000,
+      connectTimeout: 60 * 60 * 1000,
+      acquireTimeout: 60 * 60 * 1000,
+      timeout: 60 * 60 * 1000,
       host: secrets[1],
       user: secrets[2],
       password: secrets[3],
