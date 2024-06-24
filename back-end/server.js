@@ -140,7 +140,7 @@ function updateTags(tagName) {
         reject(err);
       }
       con.query(`INSERT INTO tag_name VALUES ('${tagName}');`, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) reject(error);
         else {
           resolve(results);
@@ -169,7 +169,7 @@ function checkExistence(coursePrefix, classNumber, section, instructor) {
         reject(err);
       }
       con.query(SQLquery, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) reject(error);
         else {
           resolve(results);
@@ -195,7 +195,7 @@ function retrieveClassInfoUpload(string) {
         reject(err);
       }
       con.query(`SELECT DISTINCT ${string} FROM class;`, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) {
           console.log(error)
           reject(error);
@@ -217,7 +217,7 @@ function retrieveDistinctClasses() {
         reject(err);
       }
       con.query("SELECT DISTINCT course_prefix, class_number, instructor FROM class ORDER BY term;", function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) reject(error);
         else {
           resolve(results);
@@ -232,10 +232,10 @@ function retrieveTagNames() {
     pool.getConnection((err, con)=>{
       if(err){
         console.log(err);
-        reject(err);
+        rej(err);
       }
       con.query("SELECT * FROM tag_name", function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) rej(error);
         else {
           res(results);
@@ -251,10 +251,10 @@ function retrieveUploads() {
     pool.getConnection((err, con)=>{
       if(err){
         console.log(err);
-        reject(err);
+        rej(err);
       }
       con.query(SQLquery, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) rej(error);
         else { res(results); }
       })
@@ -268,10 +268,10 @@ function retrieveClassInfo(upload_id) {
     pool.getConnection((err, con)=>{
       if(err){
         console.log(err);
-        reject(err);
+        rej(err);
       }
       con.query(SQLquery, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) rej(error);
         else { res(results); }
       });
@@ -295,10 +295,10 @@ function retrieveUploadIDFromTags(tag_name) {
     pool.getConnection((err, con)=>{
       if(err){
         console.log(err);
-        reject(err);
+        rej(err);
       }
       con.query(SQLquery, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) rej(error);
         else { res(results); }
       })
@@ -312,10 +312,10 @@ function retrieveTagInfo(upload_id) {
     pool.getConnection((err, con)=>{
       if(err){
         console.log(err);
-        reject(err);
+        rej(err);
       }
       con.query(SQLquery, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) rej(error);
         else { res(results); }
       });
@@ -329,10 +329,10 @@ function retrieveClassID(class_name) {
     pool.getConnection((err, con)=>{
       if(err){
         console.log(err);
-        reject(err);
+        rej(err);
       }
       con.query(SQLquery, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) rej(error);
         else {
           // needs to be completed running a SELECT upload_id FROM uploads WHERE class_id=''; for each returned class_id
@@ -354,10 +354,10 @@ function retrieveUploadID(ObjArray) {
     pool.getConnection((err, con)=>{
       if(err){
         console.log(err);
-        reject(err);
+        rej(err);
       }
       con.query(SQLquery, function (error, results) {
-        con.release();
+        con.release(error => error ? reject(error) : resolve(error));
         if (error) {
           rej(error);
         }
