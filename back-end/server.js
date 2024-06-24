@@ -51,12 +51,12 @@ let refresh;
 async function connEst() {
   // retrieveSecrets().then((result) => {
     // secrets = result;
-    con.query("SELECT  1;");
+    // con.query("SELECT  1;");
     // con.connect(function (error) {
     //   if (error) {
     //     console.log(error);
     //   } else {
-    //     console.log("connection successful");
+    //     console.log("con successful");
     //   }
     // });
   // });
@@ -93,7 +93,7 @@ server = app.listen(4545, () => { });
 retrieveSecrets().then((result) => {
   secrets = result;
 
-    con = mysql.createConnection({
+    pool = mysql.createPool({
       host: secrets[1],
       user: secrets[2],
       password: secrets[3],
@@ -106,7 +106,7 @@ retrieveSecrets().then((result) => {
   //     if (error) {
   //       console.log(error);
   //     } else {
-  //       console.log("connection successful");
+  //       console.log("con successful");
   //     }
   //   });
 
@@ -134,12 +134,19 @@ app.use(fileUpload());
 
 function updateTags(tagName) {
   return new Promise((resolve, reject) => {
-    con.query(`INSERT INTO tag_name VALUES ('${tagName}');`, function (error, results, fields) {
-      if (error) reject(error);
-      else {
-        resolve(results);
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
       }
-    });
+      con.query(`INSERT INTO tag_name VALUES ('${tagName}');`, function (error, results) {
+        con.release();
+        if (error) reject(error);
+        else {
+          resolve(results);
+        }
+      });
+    })
   })
 }
 
@@ -156,12 +163,19 @@ function checkExistence(coursePrefix, classNumber, section, instructor) {
   return new Promise((resolve, reject) => {
     let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND instructor ${instructor == "undefined" ? "IS NULL" : "LIKE '%" + instructor + "%'"}`;
     console.log(`${SQLquery}`);
-    con.query(SQLquery, function (error, results, fields) {
-      if (error) reject(error);
-      else {
-        resolve(results);
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
       }
-    });
+      con.query(SQLquery, function (error, results) {
+        con.release();
+        if (error) reject(error);
+        else {
+          resolve(results);
+        }
+      });
+    })
   })
 }
 
@@ -175,47 +189,75 @@ function tagFormatting(tags) {
 
 function retrieveClassInfoUpload(string) {
   return new Promise((resolve, reject) => {
-    con.query(`SELECT DISTINCT ${string} FROM class;`, function (error, results, fields) {
-      if (error) {
-        console.log(error)
-        reject(error);
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
       }
-      else {
-        console.log(results);
-        resolve(results);
-      }
-    });
+      con.query(`SELECT DISTINCT ${string} FROM class;`, function (error, results) {
+        con.release();
+        if (error) {
+          console.log(error)
+          reject(error);
+        }
+        else {
+          console.log(results);
+          resolve(results);
+        }
+      });
+    })
   })
 }
 
 function retrieveDistinctClasses() {
   return new Promise((resolve, reject) => {
-    con.query("SELECT DISTINCT course_prefix, class_number, instructor FROM class ORDER BY term;", function (error, results, fields) {
-      if (error) reject(error);
-      else {
-        resolve(results);
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
       }
-    });
+      con.query("SELECT DISTINCT course_prefix, class_number, instructor FROM class ORDER BY term;", function (error, results) {
+        con.release();
+        if (error) reject(error);
+        else {
+          resolve(results);
+        }
+      });
+    })
   })
 }
 
 function retrieveTagNames() {
   return new Promise((res, rej) => {
-    con.query("SELECT * FROM tag_name", function (error, results, fields) {
-      if (error) rej(error);
-      else {
-        res(results);
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
       }
-    });
+      con.query("SELECT * FROM tag_name", function (error, results) {
+        con.release();
+        if (error) rej(error);
+        else {
+          res(results);
+        }
+      });
+    })
   })
 }
 
 function retrieveUploads() {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT upload_id FROM uploads`;
-    con.query(SQLquery, function (error, results, fields) {
-      if (error) rej(error);
-      else { res(results); }
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
+      }
+      con.query(SQLquery, function (error, results) {
+        con.release();
+        if (error) rej(error);
+        else { res(results); }
+      })
     })
   })
 }
@@ -223,10 +265,17 @@ function retrieveUploads() {
 function retrieveClassInfo(upload_id) {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT CONCAT(COALESCE(course_prefix, ''), ' ', COALESCE(class_number, ''), ' ', COALESCE(instructor, '')) AS class_name FROM class WHERE class_id=(SELECT class_id FROM uploads WHERE upload_id=${upload_id});`
-    con.query(SQLquery, function (error, results, fields) {
-      if (error) rej(error);
-      else { res(results); }
-    });
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
+      }
+      con.query(SQLquery, function (error, results) {
+        con.release();
+        if (error) rej(error);
+        else { res(results); }
+      });
+    })
   })
 }
 
@@ -243,9 +292,16 @@ function retrieveUploadIDFromTags(tag_name) {
   const reg = /[&<>"'/]/ig;
   tag_name = tag_name.replace(reg, (match)=>(map[match]));
     let SQLquery = `SELECT upload_id FROM uploads WHERE tag_name_1 LIKE '%${tag_name}%' OR tag_name_2 LIKE '%${tag_name}%' OR tag_name_3 LIKE '%${tag_name}%' OR tag_name_4 LIKE '%${tag_name}%' OR tag_name_5 LIKE '%${tag_name}%' OR tag_name_6 LIKE '%${tag_name}%' OR tag_name_7 LIKE '%${tag_name}%' OR tag_name_8 LIKE '%${tag_name}%' OR tag_name_9 LIKE '%${tag_name}%' OR tag_name_10 LIKE '%${tag_name}%' OR tag_name_11 LIKE '%${tag_name}%' OR tag_name_12 LIKE '%${tag_name}%' OR tag_name_13 LIKE '%${tag_name}%' OR tag_name_14 LIKE '%${tag_name}%' OR tag_name_15 LIKE '%${tag_name}%';`;
-    con.query(SQLquery, function (error, results, fields) {
-      if (error) rej(error);
-      else { res(results); }
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
+      }
+      con.query(SQLquery, function (error, results) {
+        con.release();
+        if (error) rej(error);
+        else { res(results); }
+      })
     })
   })
 }
@@ -253,22 +309,36 @@ function retrieveUploadIDFromTags(tag_name) {
 function retrieveTagInfo(upload_id) {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT tag_name_1,tag_name_2,tag_name_3,tag_name_4,tag_name_5,tag_name_6,tag_name_7,tag_name_8,tag_name_9,tag_name_10,tag_name_11,tag_name_12,tag_name_13,tag_name_14,tag_name_15 FROM uploads WHERE upload_id=${upload_id};`
-    con.query(SQLquery, function (error, results, fields) {
-      if (error) rej(error);
-      else { res(results); }
-    });
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
+      }
+      con.query(SQLquery, function (error, results) {
+        con.release();
+        if (error) rej(error);
+        else { res(results); }
+      });
+    })
   })
 }
 
 function retrieveClassID(class_name) {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT class_id FROM (SELECT class_id, CONCAT(COALESCE(course_prefix, ''), ' ', COALESCE(class_number, ''), ' ', COALESCE(instructor, '')) AS class_name FROM class HAVING class_name LIKE '%${class_name}%') AS t;`;
-    con.query(SQLquery, function (error, results, fields) {
-      if (error) rej(error);
-      else {
-        // needs to be completed running a SELECT upload_id FROM uploads WHERE class_id=''; for each returned class_id
-        res(retrieveUploadID(results));
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
       }
+      con.query(SQLquery, function (error, results) {
+        con.release();
+        if (error) rej(error);
+        else {
+          // needs to be completed running a SELECT upload_id FROM uploads WHERE class_id=''; for each returned class_id
+          res(retrieveUploadID(results));
+        }
+      })
     })
   })
 }
@@ -281,13 +351,20 @@ function retrieveUploadID(ObjArray) {
       array[index] = "'" + element[Object.keys(element)[0]] + "'";
     })
     SQLquery = SQLquery + ObjArray.join(", ") + ");";
-    con.query(SQLquery, function (error, results, fields) {
-      if (error) {
-        rej(error);
+    pool.getConnection((err, con)=>{
+      if(err){
+        console.log(err);
+        reject(err);
       }
-      else {
-        res(results)
-      }
+      con.query(SQLquery, function (error, results) {
+        con.release();
+        if (error) {
+          rej(error);
+        }
+        else {
+          res(results)
+        }
+      })
     })
   })
 }
@@ -368,16 +445,22 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
           let formattedTags = tagFormatting(tags);
           let SQLquery = `INSERT INTO uploads VALUES(${response[1]}, ${response[0].entries[0].id}, ${formattedTags});`;
           console.log(SQLquery);
-          con.query(SQLquery, function (error, results, fields) {
-            if (error) console.log(error);
+          pool.getConnection((err, con)=>{
+            if(err){
+              console.log(err)
+              throw new Error(err)
+            }
+            con.query(SQLquery, function (error, results, fields) {
+              if (error) console.log(error);
+            })
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify("SUCCESS"));
           })
-          res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify("SUCCESS"));
         })
         .catch((error) => {
           console.log(error);
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify("That class may not exist or try to be more specific!"));
+          res.end(JSON.stringify("That class does not exist!"));
         })
   }
 });
