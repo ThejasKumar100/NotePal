@@ -4,11 +4,8 @@ const app = express();
 const mysql = require('mysql');
 const BoxSDK = require('box-node-sdk');
 const fileUpload = require('express-fileupload');
-const { Readable } = require("node:stream");
 const axios = require('axios');
-const MultiStream = require('multistream');
 const qs = require("querystring")
-const https = require('https')
 
 var key = fs.readFileSync('/home/ash/Projects/ashar/ssl/asharalvany.key');
 var cert = fs.readFileSync('/home/ash/Projects/ashar/ssl/asharalvany_com.crt');
@@ -97,7 +94,7 @@ retrieveSecrets().then((result) => {
       connectionLimit: 1000,
       connectTimeout: 60 * 60 * 1000,
       acquireTimeout: 60 * 60 * 1000,
-      timeout: 60 * 60 * 1000,
+      timeout   : 60 * 60 * 1000,
       host: secrets[1],
       user: secrets[2],
       password: secrets[3],
@@ -132,7 +129,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 app.use(express.json({ type: "application/json" }));
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 
 
