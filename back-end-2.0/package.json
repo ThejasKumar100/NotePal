@@ -1,0 +1,22 @@
+{
+  "name": "NotePal-BE",
+  "version": "2.0.0",
+  "description": "The (cleaner) back-end infrastructure for the NotePal web application",
+  "main": "server.js",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "box-node-sdk": "^3.4.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express-fileupload": "^1.5.0",
+    "express.js": "^1.0.0",
+    "http": "^0.0.1-security",
+    "mysql": "^2.18.1",
+    "process": "^0.11.10",
+    "query-string": "^9.0.0"
+  },
+  "scripts": {
+    "start": "node -r dotenv/config src/index dotenv_config_path=env/local.env",
+    "dev": "nodemon -r dotenv/config src/index dotenv_config_path=env/local.env"
+  }
+}
