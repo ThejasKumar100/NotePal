@@ -162,7 +162,7 @@ function SQLequivalenceFormat(value) {
 
 function checkExistence(coursePrefix, classNumber, section, instructor) {
   return new Promise((resolve, reject) => {
-    let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND instructor ${instructor == "undefined" ? "IS NULL" : "LIKE '%" + instructor + "%'"}`;
+    let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND instructor ${instructor == "undefined" ? "IS NULL" : "LIKE '" + instructor + "%'"}`;
     console.log(`${SQLquery}`);
     pool.getConnection((err, con)=>{
       if(err){
