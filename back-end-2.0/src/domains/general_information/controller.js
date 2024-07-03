@@ -1,22 +1,74 @@
-async function box_auth_controller(box_auth_flag, password){
-    let return_obj = {data: {}, response: "", status_code: ""};
-    if (!box_auth_flag && password == process.env.DB_PASSWORD) {
-        console.log("Password Accepted")
-        return_obj.data.box_auth_flag = true;
-        return_obj.data.redirect_url = `https://account.box.com/api/oauth2/authorize?client_id=${process.env.CLIENT_ID}&response_type=code&redirect_uri=https://node.asharalvany.com/box_redirect`;
-        return_obj.status_code =  300;
-    }
-    else if (password != process.env.DB_PASSWORD) {
-        console.log("Password Not Accepted")
-        return_obj.response = "Wrong Password";
-        return_obj.status_code =  401;
+const pool = require("../../config/db");
+
+function retrieveTagNames() {
+    return new Promise((res, rej) => {
+        pool.getConnection((err, con) => {
+            if (err) {
+                console.log(err);
+                rej(err);
+            }
+            con.query("SELECT * FROM tag_name", function (error, results) {
+                con.release(error => error ? reject(error) : resolve(error));
+                if (error) rej(error);
+                else {
+                    res(results);
+                }
+            });
+        })
+    })
+}
+
+function retrieveClassInfoUpload(string) {
+    return new Promise((resolve, reject) => {
+      pool.getConnection((err, con)=>{
+        if(err){
+          console.log(err);
+          reject(err);
+        }
+        con.query(`SELECT DISTINCT ${string} FROM class;`, function (error, results) {
+          con.release(error => error ? reject(error) : resolve(error));
+          if (error) {
+            console.log(error)
+            reject(error);
+          }
+          else {
+            console.log(results);
+            resolve(results);
+          }
+        });
+      })
+    })
+  }
+
+async function general_information(redirect, filter) {
+    let return_obj = { data: {}, response: "", status_code: "" };
+    if (redirect) {
+        let data;
+        if (filter == "tags") {
+            data = await retrieveTagNames()
+        }
+        else {
+            data = await retrieveClassInfoUpload(filter);
+            console.log(data)
+        }
+        let formattedData = [];
+        data.forEach(element => {
+            let temp = {};
+            if (element[Object.keys(element)[0]] == null) {
+                console.log("null value")
+                return;
+            }
+            temp["label"] = element[Object.keys(element)[0]];
+            formattedData.push(temp);
+        });
+        return_obj.status_code = 200;
+        return_obj.data.search_results = formattedData;
     }
     else {
-        console.log("Password Not Accepted")
-        return_obj.response = "Authentication completed";
-        return_obj.status_code =  202;
+        return_obj.response = "Not Authenticated";
+        return_obj.status_code = 201;
     }
     return return_obj;
 }
 
-module.exports = box_auth_controller
+module.exports = general_information

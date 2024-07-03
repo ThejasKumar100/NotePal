@@ -25,7 +25,7 @@ async function redirect_controller(box_auth_flag, redirect, code){
         return_obj.response = "Success";
         return_obj.status_code = 200;
     }
-    else if (!box_auth_controller) {
+    else if (!redirect) {
         return_obj.response = "Box has not been authorized";
         return_obj.status_code = 201;
     }

@@ -39,7 +39,6 @@ function retrieveDistinctClasses() {
 async function search_format(redirect) {
     let return_obj = { data: {}, response: "", status_code: "" };
     if (redirect) {
-        console.log("search_format");
         let tag_names = await retrieveTagNames();
         let classes = await retrieveDistinctClasses();
         let formattedClasses = [];
@@ -56,7 +55,6 @@ async function search_format(redirect) {
         })
         return_obj.data.search_results = formattedClasses;
         return_obj.status_code = 200;
-        return_obj.response = "Not Authenticated";
     }
     else {
         return_obj.response = "Not Authenticated";

@@ -4,7 +4,7 @@ const router = express.Router()
 const box_auth = require("../domains/box_auth/controller");
 const redirect_auth = require("../domains/redirect/controller");
 const token_refresh = require("../util/token_refresh");
-// const general_information = require("../domains/general_information/controller");
+const general_information = require("../domains/general_information/controller");
 // const get_file = require("../domains/get_file");
 // const get_file_info = require("../domains/get_file_info");
 const search_format = require("../domains/search_format/controller");
@@ -22,7 +22,7 @@ setInterval(async () => {
 }, 1000 * 60 * 30)
 
 router.get("/box_auth/:password", async (req, res) =>{
-    let return_obj = await box_auth(box_auth_flag, req.params.password);
+    let return_obj = await box_auth(box_auth_flag, redirect, req.params.password);
     console.log(return_obj)
     if(return_obj.data.box_auth_flag != null){
         box_auth_flag = true;
@@ -42,7 +42,7 @@ router.get("/box_redirect", async (req, res) =>{
         redirect = true;
         [refresh, client] = await token_refresh(return_obj.data.refresh);
         res.status(return_obj.status_code)
-        res.send(return_obj.data.response)
+        res.send(return_obj.response)
     }
     else{
         res.status(return_obj.status_code)
@@ -50,9 +50,17 @@ router.get("/box_redirect", async (req, res) =>{
     }
 })
 
-// router.get("/generalInformation/:filter", async (req, res) =>{
-
-// })
+router.get("/generalInformation/:filter", async (req, res) =>{
+    let return_obj = await general_information(redirect, req.params.filter);
+    if(return_obj.data.search_results != null){
+        res.status(return_obj.status_code);
+        res.send(return_obj.data.search_results);
+    }
+    else{
+        res.status(return_obj.status_code)
+        res.send(return_obj.response);
+    }
+})
 
 // router.get("/getFile/:uploadID", async (req, res) =>{
 
