@@ -6,10 +6,10 @@ const redirect_auth = require("../domains/redirect/controller");
 const token_refresh = require("../util/token_refresh");
 const general_information = require("../domains/general_information/controller");
 const get_file = require("../domains/get_file/controller");
-// const get_file_info = require("../domains/get_file_info");
+const get_file_info = require("../domains/get_file_info/controller");
 const search_format = require("../domains/search_format/controller");
 // const upload = require("../domains/upload");
-// const get_uploads = require("../domains/get_uploads");
+const get_uploads = require("../domains/get_uploads/controller");
 
 let box_auth_flag = false;
 let redirect = false;
@@ -80,9 +80,17 @@ router.get("/getFile/:uploadID", async (req, res) => {
     }
 })
 
-// router.get("/getFileInfo/:uploadArray", async (req, res) =>{
-
-// })
+router.get("/getFileInfo/:uploadArray", async (req, res) =>{
+    let return_obj = await get_file_info(redirect, req.params.uploadArray);
+    if (return_obj.data.fileInfo != null) {
+        res.status(return_obj.status_code);
+        res.send(return_obj.data.fileInfo);
+    }
+    else {
+        res.status(return_obj.status_code)
+        res.send(return_obj.response);
+    }
+})
 
 router.get("/searchFormat", async (req, res) => {
     let return_obj = await search_format(redirect);
@@ -100,6 +108,18 @@ router.get("/searchFormat", async (req, res) => {
 // router.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async (req, res) =>{
 
 // })
+
+router.get("/getUploadID/:searchQuery", async (req, res) => {
+    let return_obj = await get_uploads(redirect, req.params.searchQuery);
+    if (return_obj.data.uploads != null) {
+        res.status(return_obj.status_code);
+        res.send(return_obj.data.uploads);
+    }
+    else {
+        res.status(return_obj.status_code)
+        res.send(return_obj.response);
+    }
+})
 
 
 module.exports = router
