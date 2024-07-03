@@ -18,9 +18,9 @@ async function token_refresh(refresh){
     .then((response) => response.data);
     console.log("TIME: ", new Date(Date.now()).toLocaleString('en-US', { timeZone: 'America/Chicago' }))
     console.log(tokens)
-    refresh = tokens.refresh_token
+    let new_refresh = tokens.refresh_token
     client = box_sdk.getBasicClient(tokens.access_token);
-    return [refresh, client];
+    return [new_refresh, client];
 }
 
 module.exports = token_refresh

@@ -470,7 +470,7 @@ app.get("/", async function (req, res) {
   res.send("Alekhyaa wuz here <3");
 })
 
-app.get("/test/:password", async function (req, res) {
+app.get("/box_auth/:password", async function (req, res) {
   if (!var_ready && req.params.password == secrets[3]) {
     test2 = true;
     res.redirect(`https://account.box.com/api/oauth2/authorize?client_id=${secrets[5]}&response_type=code&redirect_uri=https://node.asharalvany.com/test2`)
@@ -484,7 +484,7 @@ app.get("/test/:password", async function (req, res) {
   // res.send("SUCCESS")
 })
 
-app.get("/test2", async function (req, res) {
+app.get("/redirect", async function (req, res) {
   if (!var_ready && test2) {
     const authenticationUrl = "https://api.box.com/oauth2/token";
     let tokens = await axios
