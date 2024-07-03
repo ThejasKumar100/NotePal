@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 
 let mysql_conn = null;
-function est_db_conn (){
+function est_db_conn(){
     mysql_conn = mysql.createPool({
         connectionLimit: 1000,
         connectTimeout: 60 * 60 * 1000,
