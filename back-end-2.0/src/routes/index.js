@@ -17,74 +17,80 @@ let refresh = null;
 let client = null;
 
 setInterval(async () => {
-    if (redirect) {
-      [refresh, client] = await token_refresh(refresh);
+    try {
+        if (redirect) {
+            [refresh, client] = await token_refresh(refresh);
+        }
+    } catch (error) {
+        console.log("Key renewal error");
     }
 }, 1000 * 60 * 30)
 
-router.get("/box_auth/:password", async (req, res) =>{
+router.get("/box_auth/:password", async (req, res) => {
     let return_obj = await box_auth(box_auth_flag, redirect, req.params.password);
     console.log(return_obj)
-    if(return_obj.data.box_auth_flag != null){
+    if (return_obj.data.box_auth_flag != null) {
         box_auth_flag = true;
         res.status(return_obj.status_code)
         res.redirect(return_obj.data.redirect_url)
     }
-    else{
+    else {
         res.status(return_obj.status_code)
         res.send(return_obj.response);
     }
 })
 
-router.get("/box_redirect", async (req, res) =>{
+router.get("/box_redirect", async (req, res) => {
     let return_obj = await redirect_auth(box_auth_flag, redirect, req.query.code);
-    if(return_obj.data.box_auth_flag != null){
+    if (return_obj.data.box_auth_flag != null) {
         box_auth_flag = false;
         redirect = true;
         [refresh, client] = await token_refresh(return_obj.data.refresh);
         res.status(return_obj.status_code)
         res.send(return_obj.response)
     }
-    else{
+    else {
         res.status(return_obj.status_code)
         res.send(return_obj.response);
     }
 })
 
-router.get("/generalInformation/:filter", async (req, res) =>{
+router.get("/generalInformation/:filter", async (req, res) => {
     let return_obj = await general_information(redirect, req.params.filter);
-    if(return_obj.data.search_results != null){
+    if (return_obj.data.search_results != null) {
         res.status(return_obj.status_code);
         res.send(return_obj.data.search_results);
     }
-    else{
+    else {
         res.status(return_obj.status_code)
         res.send(return_obj.response);
     }
 })
 
-// works but defeats the purpose of decoupling. I would like to separate further
-// Current roadblock: Box creates a read stream that I need to stream as a response
-// Using decoupling, the stream should pipe to an intermediary stream, and that 
-// intermediary should then pipe to res
-// However, the solution currently works, is clean (looking), and I really
-// don't want to mess with it further, these are just the rambling notes
-// to a future(?) developer (I hope you're doing well) 
-router.get("/getFile/:uploadID", async (req, res) =>{
-    get_file(redirect, req.params.uploadID, client, res);
+router.get("/getFile/:uploadID", async (req, res) => {
+    let return_obj = await get_file(redirect, req.params.uploadID, client);
+    if (return_obj.data.streamFlag != null) {
+        res.status(return_obj.status_code);
+        return_obj.data.stream.pipe(res);
+    }
+    else {
+        console.log(return_obj.data.error);
+        res.status(return_obj.status_code)
+        res.send(return_obj.response);
+    }
 })
 
 // router.get("/getFileInfo/:uploadArray", async (req, res) =>{
 
 // })
 
-router.get("/searchFormat", async (req, res) =>{
+router.get("/searchFormat", async (req, res) => {
     let return_obj = await search_format(redirect);
-    if(return_obj.data.search_results != null){
+    if (return_obj.data.search_results != null) {
         res.status(return_obj.status_code);
         res.send(return_obj.data.search_results);
     }
-    else{
+    else {
         res.status(return_obj.status_code)
         res.send(return_obj.response);
     }
