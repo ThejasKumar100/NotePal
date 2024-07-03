@@ -473,7 +473,7 @@ app.get("/", async function (req, res) {
 app.get("/box_auth/:password", async function (req, res) {
   if (!var_ready && req.params.password == secrets[3]) {
     test2 = true;
-    res.redirect(`https://account.box.com/api/oauth2/authorize?client_id=${secrets[5]}&response_type=code&redirect_uri=https://node.asharalvany.com/test2`)
+    res.redirect(`https://account.box.com/api/oauth2/authorize?client_id=${secrets[5]}&response_type=code&redirect_uri=https://node.asharalvany.com/box_redirect`)
   }
   else if (req.params.password != secrets[3]) {
     res.send("Wrong Password")
@@ -484,7 +484,7 @@ app.get("/box_auth/:password", async function (req, res) {
   // res.send("SUCCESS")
 })
 
-app.get("/redirect", async function (req, res) {
+app.get("/box_redirect", async function (req, res) {
   if (!var_ready && test2) {
     const authenticationUrl = "https://api.box.com/oauth2/token";
     let tokens = await axios

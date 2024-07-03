@@ -15,6 +15,6 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "node server.js"
+    "test": "nodemon server.js"
   }
 }

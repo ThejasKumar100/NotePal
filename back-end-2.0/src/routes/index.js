@@ -5,10 +5,11 @@ const box_auth = require("../domains/box_auth/controller");
 const redirect_auth = require("../domains/redirect/controller");
 const token_refresh = require("../util/token_refresh");
 const general_information = require("../domains/general_information/controller");
-// const get_file = require("../domains/get_file");
+const get_file = require("../domains/get_file/controller");
 // const get_file_info = require("../domains/get_file_info");
 const search_format = require("../domains/search_format/controller");
 // const upload = require("../domains/upload");
+// const get_uploads = require("../domains/get_uploads");
 
 let box_auth_flag = false;
 let redirect = false;
@@ -62,9 +63,16 @@ router.get("/generalInformation/:filter", async (req, res) =>{
     }
 })
 
-// router.get("/getFile/:uploadID", async (req, res) =>{
-
-// })
+// works but defeats the purpose of decoupling. I would like to separate further
+// Current roadblock: Box creates a read stream that I need to stream as a response
+// Using decoupling, the stream should pipe to an intermediary stream, and that 
+// intermediary should then pipe to res
+// However, the solution currently works, is clean (looking), and I really
+// don't want to mess with it further, these are just the rambling notes
+// to a future(?) developer (I hope you're doing well) 
+router.get("/getFile/:uploadID", async (req, res) =>{
+    get_file(redirect, req.params.uploadID, client, res);
+})
 
 // router.get("/getFileInfo/:uploadArray", async (req, res) =>{
 
