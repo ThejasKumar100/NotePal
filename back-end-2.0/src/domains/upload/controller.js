@@ -135,7 +135,7 @@ async function upload(redirect, params, files, client) {
                         let fileName = new Date().toJSON();
                         let file = files.file.data;
                         console.log(`uploading ${fileName}`);
-                        return [await client.files.uploadFile(`${process.env.BOX_FOLDER_ID}`, fileName, file), class_id]; //folder id
+                        return [await client.files.uploadFile(`${process.env.BOX_FOLDER_ID}`, fileName, file), class_id];
                     })
                     .then((response) => {
                         console.log(`upload complete`);

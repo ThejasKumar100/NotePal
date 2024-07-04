@@ -37,7 +37,6 @@ function retrieveClassID(class_name) {
                 con.release(error => error ? reject(error) : resolve(error));
                 if (error) rej(error);
                 else {
-                    // needs to be completed running a SELECT upload_id FROM uploads WHERE class_id=''; for each returned class_id
                     res(retrieveUploadID(results));
                 }
             })
@@ -84,7 +83,6 @@ async function get_uploads(redirect, searchQuery) {
         upload_id.forEach((element, i, arr) => {
             arr[i] = element[Object.keys(element)[0]];
         })
-        // return_obj.data.headers = 'Content-Type', 'application/json';
         return_obj.status_code = 200;
         return_obj.data.uploads = JSON.stringify(upload_id);
     }
