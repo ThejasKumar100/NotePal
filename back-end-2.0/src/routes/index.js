@@ -8,7 +8,7 @@ const general_information = require("../domains/general_information/controller")
 const get_file = require("../domains/get_file/controller");
 const get_file_info = require("../domains/get_file_info/controller");
 const search_format = require("../domains/search_format/controller");
-// const upload = require("../domains/upload");
+const upload = require("../domains/upload/controller");
 const get_uploads = require("../domains/get_uploads/controller");
 
 let box_auth_flag = false;
@@ -104,10 +104,12 @@ router.get("/searchFormat", async (req, res) => {
     }
 })
 
-
-// router.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async (req, res) =>{
-
-// })
+router.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async (req, res) =>{
+    let return_obj = await upload(redirect, req.params, req.files, client);
+    console.log(return_obj)
+    res.status(return_obj.status_code);
+    res.send(return_obj.response);
+})
 
 router.get("/getUploadID/:searchQuery", async (req, res) => {
     let return_obj = await get_uploads(redirect, req.params.searchQuery);

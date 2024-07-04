@@ -47,15 +47,15 @@ let refresh;
 
 async function connEst() {
   // retrieveSecrets().then((result) => {
-    // secrets = result;
-    // con.query("SELECT  1;");
-    // con.connect(function (error) {
-    //   if (error) {
-    //     console.log(error);
-    //   } else {
-    //     console.log("con successful");
-    //   }
-    // });
+  // secrets = result;
+  // con.query("SELECT  1;");
+  // con.connect(function (error) {
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //     console.log("con successful");
+  //   }
+  // });
   // });
   const authenticationUrl = "https://api.box.com/oauth2/token";
 
@@ -90,16 +90,16 @@ server = app.listen(4545, () => { });
 retrieveSecrets().then((result) => {
   secrets = result;
 
-    pool = mysql.createPool({
-      connectionLimit: 1000,
-      connectTimeout: 60 * 60 * 1000,
-      acquireTimeout: 60 * 60 * 1000,
-      timeout   : 60 * 60 * 1000,
-      host: secrets[1],
-      user: secrets[2],
-      password: secrets[3],
-      database: secrets[4],
-    });
+  pool = mysql.createPool({
+    connectionLimit: 1000,
+    connectTimeout: 60 * 60 * 1000,
+    acquireTimeout: 60 * 60 * 1000,
+    timeout: 60 * 60 * 1000,
+    host: secrets[1],
+    user: secrets[2],
+    password: secrets[3],
+    database: secrets[4],
+  });
 
   //   server = app.listen(4545, ()=>{}); 
 
@@ -135,8 +135,8 @@ app.use(fileUpload());
 
 function updateTags(tagName) {
   return new Promise((resolve, reject) => {
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         reject(err);
       }
@@ -164,8 +164,8 @@ function checkExistence(coursePrefix, classNumber, section, instructor) {
   return new Promise((resolve, reject) => {
     let SQLquery = `SELECT * FROM class WHERE course_prefix ${SQLequivalenceFormat(coursePrefix)} AND class_number ${SQLequivalenceFormat(classNumber)} AND instructor ${instructor == "undefined" ? "IS NULL" : "LIKE '" + instructor + "%'"}`;
     console.log(`${SQLquery}`);
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         reject(err);
       }
@@ -190,8 +190,8 @@ function tagFormatting(tags) {
 
 function retrieveClassInfoUpload(string) {
   return new Promise((resolve, reject) => {
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         reject(err);
       }
@@ -212,8 +212,8 @@ function retrieveClassInfoUpload(string) {
 
 function retrieveDistinctClasses() {
   return new Promise((resolve, reject) => {
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         reject(err);
       }
@@ -230,8 +230,8 @@ function retrieveDistinctClasses() {
 
 function retrieveTagNames() {
   return new Promise((res, rej) => {
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         rej(err);
       }
@@ -249,8 +249,8 @@ function retrieveTagNames() {
 function retrieveUploads() {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT upload_id FROM uploads`;
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         rej(err);
       }
@@ -266,8 +266,8 @@ function retrieveUploads() {
 function retrieveClassInfo(upload_id) {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT CONCAT(COALESCE(course_prefix, ''), ' ', COALESCE(class_number, ''), ' ', COALESCE(instructor, '')) AS class_name FROM class WHERE class_id=(SELECT class_id FROM uploads WHERE upload_id=${upload_id});`
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         rej(err);
       }
@@ -289,12 +289,12 @@ function retrieveUploadIDFromTags(tag_name) {
       '"': '&quot;',
       "'": '&#x27;',
       "/": '&#x2F;',
-  };
-  const reg = /[&<>"'/]/ig;
-  tag_name = tag_name.replace(reg, (match)=>(map[match]));
+    };
+    const reg = /[&<>"'/]/ig;
+    tag_name = tag_name.replace(reg, (match) => (map[match]));
     let SQLquery = `SELECT upload_id FROM uploads WHERE tag_name_1 LIKE '%${tag_name}%' OR tag_name_2 LIKE '%${tag_name}%' OR tag_name_3 LIKE '%${tag_name}%' OR tag_name_4 LIKE '%${tag_name}%' OR tag_name_5 LIKE '%${tag_name}%' OR tag_name_6 LIKE '%${tag_name}%' OR tag_name_7 LIKE '%${tag_name}%' OR tag_name_8 LIKE '%${tag_name}%' OR tag_name_9 LIKE '%${tag_name}%' OR tag_name_10 LIKE '%${tag_name}%' OR tag_name_11 LIKE '%${tag_name}%' OR tag_name_12 LIKE '%${tag_name}%' OR tag_name_13 LIKE '%${tag_name}%' OR tag_name_14 LIKE '%${tag_name}%' OR tag_name_15 LIKE '%${tag_name}%';`;
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         rej(err);
       }
@@ -310,8 +310,8 @@ function retrieveUploadIDFromTags(tag_name) {
 function retrieveTagInfo(upload_id) {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT tag_name_1,tag_name_2,tag_name_3,tag_name_4,tag_name_5,tag_name_6,tag_name_7,tag_name_8,tag_name_9,tag_name_10,tag_name_11,tag_name_12,tag_name_13,tag_name_14,tag_name_15 FROM uploads WHERE upload_id=${upload_id};`
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         rej(err);
       }
@@ -327,8 +327,8 @@ function retrieveTagInfo(upload_id) {
 function retrieveClassID(class_name) {
   return new Promise((res, rej) => {
     let SQLquery = `SELECT class_id FROM (SELECT class_id, CONCAT(COALESCE(course_prefix, ''), ' ', COALESCE(class_number, ''), ' ', COALESCE(instructor, '')) AS class_name FROM class HAVING class_name LIKE '%${class_name}%') AS t;`;
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         rej(err);
       }
@@ -352,8 +352,8 @@ function retrieveUploadID(ObjArray) {
       array[index] = "'" + element[Object.keys(element)[0]] + "'";
     })
     SQLquery = SQLquery + ObjArray.join(", ") + ");";
-    pool.getConnection((err, con)=>{
-      if(err){
+    pool.getConnection((err, con) => {
+      if (err) {
         console.log(err);
         rej(err);
       }
@@ -388,81 +388,82 @@ app.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructo
   if (req.files == null) {
     res.send(JSON.stringify("Please include a file!"));
     return
-    }
-    if (tags === "undefined") {
-      res.send(JSON.stringify("At least one tag must be present!"));
-      return
-    }
-    else {
-      console.log(tags)
-      for(let tag of tags){
-        if(typeof(tag) == "object"){
-          tag = tag["label"];
-        }
-        if(tag.length > 19){
-          console.log("tag large input");
-          res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify("Tags must be less than 20 characters"));
-          return;
-        }
-        console.log(tag)
-        const match = tag.match(/[;*@%\-'`"]+/)
-        if(match != null){
-          console.log("tag malicious input");
-          res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify("Tags cannot contain the following [&, @, *, $, |, %, ~, -, ', `, \", ;]"));
-          return;
-        }
-      };
-      let currentTags = await retrieveTagNames();
-      currentTags.forEach((element, index, arr) => {
-        arr[index] = element[Object.keys(element)[0]]
-      })
-      for (let i = 0; i < tags.length; i++) {
-        if ((typeof tags[i] === "object")) {
-          tags[i] = tags[i]["label"];
-        }
+  }
+  if (tags === "undefined") {
+    res.send(JSON.stringify("At least one tag must be present!"));
+    return
+  }
+  else {
+    console.log(tags)
+    for (let tag of tags) {
+      if (typeof (tag) == "object") {
+        tag = tag["label"];
       }
-      tags.forEach((element, index, Arr) => {
-        if (!currentTags.includes(element.toLowerCase())) {
-          console.log(`current tags: ${currentTags}`);
-          console.log(`new tag: ${element}`);
-          updateTags(element.toLowerCase());
-        }
-        else {
-          Arr[index] = element.toLowerCase();
-        }
+      if (tag.length > 19) {
+        console.log("tag large input");
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify("Tags must be less than 20 characters"));
+        return;
+      }
+      console.log(tag)
+      const match = tag.match(/[;*@%\-'`"]+/)
+      if (match != null) {
+        console.log("tag malicious input");
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify("Tags cannot contain the following [&, @, *, $, |, %, ~, -, ', `, \", ;]"));
+        return;
+      }
+    };
+    let currentTags = await retrieveTagNames();
+    currentTags.forEach((element, index, arr) => {
+      arr[index] = element[Object.keys(element)[0]]
+    })
+    for (let i = 0; i < tags.length; i++) {
+      if ((typeof tags[i] === "object")) {
+        tags[i] = tags[i]["label"];
+      }
+    }
+    tags.forEach((element, index, Arr) => {
+      if (!currentTags.includes(element.toLowerCase())) {
+        console.log(`current tags: ${currentTags}`);
+        console.log(`new tag: ${element}`);
+        updateTags(element.toLowerCase());
+      }
+      else {
+        Arr[index] = element.toLowerCase();
+      }
+    })
+    checkExistence(coursePrefix, classNumber, section, instructor)
+      .then(async (results) => {
+        console.log(results)
+        let class_id = results[0].class_id;
+        let fileName = new Date().toJSON();
+        let file = req.files.file.data;
+        console.log(file)
+        return [await client.files.uploadFile('240811112427', fileName, file), class_id]; //folder id
       })
-      checkExistence(coursePrefix, classNumber, section, instructor)
-        .then(async (results) => {
-          console.log(results)
-          let class_id = results[0].class_id;
-          let fileName = new Date().toJSON();
-          let file = req.files.file.data;
-          console.log(file)
-          return [await client.files.uploadFile('240811112427', fileName, file), class_id]; //folder id
-        })
-        .then((response) => {
-          let formattedTags = tagFormatting(tags);
-          let SQLquery = `INSERT INTO uploads VALUES(${response[1]}, ${response[0].entries[0].id}, ${formattedTags});`;
-          console.log(SQLquery);
-          pool.getConnection((err, con)=>{
-            if(err){
-              console.log(err)
-              throw new Error(err)
-            }
-            con.query(SQLquery, function (error, results, fields) {
-              if (error) console.log(error);
-            })
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify("SUCCESS"));
+      .then((response) => {
+        let formattedTags = tagFormatting(tags);
+        let SQLquery = `INSERT INTO uploads VALUES(${response[1]}, ${response[0].entries[0].id}, ${formattedTags});`;
+        console.log(SQLquery);
+        pool.getConnection((err, con) => {
+          if (err) {
+            console.log(err)
+            throw new Error(err)
+          }
+          con.query(SQLquery, function (error, results, fields) {
+            con.release(error => error ? reject(error) : resolve(error));
+            if (error) console.log(error);
           })
-        })
-        .catch((error) => {
-          console.log(error);
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify("That class does not exist!"));
+          res.end(JSON.stringify("SUCCESS"));
         })
+      })
+      .catch((error) => {
+        console.log(error);
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify("That class does not exist!"));
+      })
   }
 });
 
