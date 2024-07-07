@@ -49,23 +49,26 @@ function CardResult(props) {
   let [focused, setFocused] = useState(false);
   let [report, setReport] = useState(false);
   let [flagType, setFlagType] = useState("");
+  let [loading, setLoading] = useState(false)
   function escFunction(event) {
     if (event.key === "Escape") {
       setFocused(false);
+      setFlagType("")
+      setReport(false)
+      setLoading(false)
     }
   }
   function submitReport() {
-    if(flagType != ""){
-      console.log(props.uploadID)
+    setLoading(true)
+    if (flagType != "") {
       fetch(`https://node.asharalvany.com/flag/${props.uploadID}/${flagType}`)
-      .then(response => response.json())
-      .then((message)=>{
-        console.log(message)
-        props.setNotification(true)
-        props.setMessageValue(message == "Success" ? "Note Reported" : message)
-        setFlagType("")
-        setReport(false)
-      })
+        .then((message) => {
+          props.setNotification(true)
+          props.setMessageValue(message.status == 200 ? "Note Successfully Reported" : "An Error Has Occurred")
+          setFlagType("")
+          setReport(false)
+          setLoading(false)
+        })
     }
   }
   function flag(string) {
@@ -117,7 +120,7 @@ function CardResult(props) {
           <div className='sr-fullScreenContainer'>
             <img className='sr-fullScreenImage' src={image} />
             <div className='sr-closeContainer'>
-              <CloseRoundedIcon onClick={(e) => { e.stopPropagation(); setFocused(false) }} sx={{ color: "#C67143", fontSize: "3rem", cursor: "pointer" }} />
+              <CloseRoundedIcon onClick={(e) => { e.stopPropagation();setFocused(false);setFlagType("");setReport(false);setLoading(false) }} sx={{ color: "#C67143", fontSize: "3rem", cursor: "pointer" }} />
             </div>
             <div className='sr-flagContainer'>
               <OutlinedFlagRoundedIcon sx={{ color: "#C67143", fontSize: "3rem", cursor: "pointer" }} onClick={() => {
@@ -130,7 +133,11 @@ function CardResult(props) {
                 <div onClick={() => { flag("Irrelevant") }} className={"sr-DropDownContent " + (flagType == "Irrelevant" ? "sr-selected" : "")}>Irrelevant Content</div>
                 <div onClick={() => { flag("Misinformation") }} className={"sr-DropDownContent " + (flagType == "Misinformation" ? "sr-selected" : "")}>Misinformation</div>
                 <div onClick={() => { flag("Sexual") }} className={"sr-DropDownContent " + (flagType == "Sexual" ? "sr-selected" : "")}>Sexual or Repulsive Content</div>
-                <div onClick={() => { submitReport() }} className={"sr-DropDownSubmit"}>Submit</div>
+                {
+                  loading ?
+                  <div className="sr-DropDownSubmit">{<loading-bounce size="30"></loading-bounce>}</div> :
+                  <div onClick={() => { submitReport() }} className="sr-DropDownSubmit">Submit</div>
+                }
               </div>
               :
               null}
@@ -167,11 +174,10 @@ function SearchResults(props) {
       .catch(error => console.log(error))
   }, [])
   useEffect(() => {
-    console.log("active page: ", activePage, " of ", uploadArray.length)
     if (uploadArray.length > 0) {
       setActiveUploads((numberOfPages > activePage ? (uploadArray.slice(cardPerPage * (activePage - 1), (cardPerPage * (activePage - 1)) + cardPerPage)) : (uploadArray.slice(cardPerPage * (activePage - 1), uploadArray.length))));
     }
-    else{
+    else {
       setData([])
       setLoading(false);
     }
@@ -186,13 +192,12 @@ function SearchResults(props) {
   useEffect(() => {
     let temp = [];
     data.forEach(element => {
-      temp.push(<CardResult setMessageValue = {setMessageValue} setNotification={setNotification} key={element["key"]} uploadID={element["key"]} title={element["class_name"]} tag={element["tags"]} />)
+      temp.push(<CardResult setMessageValue={setMessageValue} setNotification={setNotification} key={element["key"]} uploadID={element["key"]} title={element["class_name"]} tag={element["tags"]} />)
     });
     setCardArray(temp);
     setLoading(false);
   }, [data])
   useEffect(() => {
-    console.log(`Search Value: ${searchValue}`);
     setLoading(true)
     setCardArray([])
     setData([])
@@ -210,9 +215,6 @@ function SearchResults(props) {
       setNumberOfPages(0)
     }
   }, [searchValue])
-  useEffect(() => {
-    console.log(loading)
-  }, [loading])
   function handleLeftIcon() {
     if (1 < activePage) {
       setActivePage(activePage - 1);

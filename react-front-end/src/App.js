@@ -43,14 +43,13 @@ function UploadInput(props) {
     fetch(`https://node.asharalvany.com/generalInformation/${props.url}`)
     .then((response) => response.json())
     .then((data) => {
-    console.log(data);
     setOptions(data);
   })
   .catch(error => console.log(error))
   }, [props.url])
   return(
   <div className='inputContainer2' >
-    <div className="searchIconCont2" onClick={() => {inputRef.focus();console.log('clicked');}}>
+    <div className="searchIconCont2" onClick={() => {inputRef.focus();}}>
       <SearchIcon className='searchIcon2'/>
     </div>
     <Autocomplete
@@ -132,7 +131,6 @@ function App(props) {
     fetch('https://node.asharalvany.com/searchFormat')
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       setClasses(data);
       setPlaceholder(data[Math.floor(Math.random()* data.length)]['label'])
     })
@@ -153,13 +151,11 @@ function App(props) {
     // filename.split('.').pop()
     
     const {files} = e.dataTransfer;
-    console.log(files[0].size)
     if(files[0].size > 10e6){
       setNotification(true);
       setMessageValue("File is too large!")
       return
     }
-    console.log(files[0]["name"].split('.').pop().toLowerCase());
     let file_ext = files[0]["name"].split('.').pop().toLowerCase();
     if (files && files.length == 1 && (file_ext === "png" || file_ext === "jpg")) {
       setFileReceived(true);
@@ -205,10 +201,8 @@ function App(props) {
       return
     }
     setLoading(true);
-    console.log("file size:", rawFile)
     var data = new FormData();
     data.append('file', rawFile)
-    console.log(instructor)
     fetch(`https://node.asharalvany.com/uploadSearchParameters/${coursePrefix};${classNumber};${section};${instructor.replaceAll(';', '%3B')};${term};${tags}`, {
       method: 'POST',
       body: data
@@ -259,7 +253,6 @@ function App(props) {
         horizontal: "left"
       }}
       disablePortal
-      onChange={(e, v) => console.log(v)}
       options={[{"label": "loading"}]}
       renderInput={(params) => <TextField {...params} placeholder={"Fetching Data..."} inputRef={input => {inputRef = input}}/>}
       PaperComponent={CustomPaper}
@@ -332,13 +325,12 @@ function App(props) {
               : 
               <div onDrop={handleDrop} onDragOver={handleDragOver} className="fileDrop">
                 <input accept="image/png, image/jpg, image/jpeg" onInput={(e) => {
-                  console.log(e.target.files[0].size)
                   if(e.target.files[0].size > 10e6){
                     setNotification(true);
                     setMessageValue("File is too large!")
                     return
                   }
-                  setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0]);console.log(e.target.files[0])}} ref={input => uploadRef = input} hidden type='file'/>
+                  setFileReceived(true);setFile(URL.createObjectURL(e.target.files[0]));setRawFile(e.target.files[0])}} ref={input => uploadRef = input} hidden type='file'/>
                 <div className="callDrop">Drop Your Files Here</div>
                 <div className="imageIconContainer">
                     <ImageIcon style={{fontSize:'98px', color:'#3B1910'}}/>

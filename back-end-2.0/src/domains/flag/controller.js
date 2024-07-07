@@ -19,7 +19,7 @@ function updateFlags(uploadID, flagType) {
     })
 }
 
-async function set_flags(redirect, uploadID, flagType) {
+async function  set_flags(redirect, uploadID, flagType) {
     let return_obj = { data: {}, response: "", status_code: "" };
     if (redirect) {
         try {
