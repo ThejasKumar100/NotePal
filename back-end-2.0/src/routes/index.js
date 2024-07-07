@@ -10,6 +10,7 @@ const get_file_info = require("../domains/get_file_info/controller");
 const search_format = require("../domains/search_format/controller");
 const upload = require("../domains/upload/controller");
 const get_uploads = require("../domains/get_uploads/controller");
+const set_flags = require("../domains/set_flags/controller");
 
 let box_auth_flag = false;
 let redirect = false;
@@ -80,7 +81,7 @@ router.get("/getFile/:uploadID", async (req, res) => {
     }
 })
 
-router.get("/getFileInfo/:uploadArray", async (req, res) =>{
+router.get("/getFileInfo/:uploadArray", async (req, res) => {
     let return_obj = await get_file_info(redirect, req.params.uploadArray);
     if (return_obj.data.fileInfo != null) {
         res.status(return_obj.status_code);
@@ -104,7 +105,7 @@ router.get("/searchFormat", async (req, res) => {
     }
 })
 
-router.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async (req, res) =>{
+router.post("/uploadSearchParameters/:coursePrefix;:classNumber;:section;:instructor;:term;:tags", async (req, res) => {
     let return_obj = await upload(redirect, req.params, req.files, client);
     console.log(return_obj)
     res.status(return_obj.status_code);
@@ -123,5 +124,10 @@ router.get("/getUploadID/:searchQuery", async (req, res) => {
     }
 })
 
+router.get("/flag/:uploadID/:flagType", async (req, res) => {
+    let return_obj = await set_flags(redirect, req.params.uploadID, req.params.flagType);
+    res.status(return_obj.status_code)
+    res.send(return_obj.response);
+})
 
 module.exports = router
