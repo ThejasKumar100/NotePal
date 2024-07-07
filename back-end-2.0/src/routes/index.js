@@ -10,7 +10,7 @@ const get_file_info = require("../domains/get_file_info/controller");
 const search_format = require("../domains/search_format/controller");
 const upload = require("../domains/upload/controller");
 const get_uploads = require("../domains/get_uploads/controller");
-const set_flags = require("../domains/set_flags/controller");
+const set_flags = require("../domains/flag/controller");
 
 let box_auth_flag = false;
 let redirect = false;

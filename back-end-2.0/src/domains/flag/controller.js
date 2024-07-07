@@ -19,7 +19,7 @@ function updateFlags(uploadID, flagType) {
     })
 }
 
-async function set_filters(redirect, uploadID, flagType) {
+async function set_flags(redirect, uploadID, flagType) {
     let return_obj = { data: {}, response: "", status_code: "" };
     if (redirect) {
         try {
@@ -39,4 +39,4 @@ async function set_filters(redirect, uploadID, flagType) {
     return return_obj;
 }
 
-module.exports = set_filters;
+module.exports = set_flags;
