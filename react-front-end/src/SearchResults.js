@@ -6,7 +6,10 @@ import logo from './notepal_logo.png'
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import OutlinedFlagRoundedIcon from '@mui/icons-material/OutlinedFlagRounded';
 import { ring } from 'ldrs'
+import { motion } from 'framer-motion'
 import { bouncy } from 'ldrs'
 
 ring.register("loading-ring")
@@ -44,11 +47,40 @@ function CardResult(props) {
   let [image, setImage] = useState();
   let [loaded, setLoaded] = useState(false);
   let [focused, setFocused] = useState(false);
+  let [report, setReport] = useState(false);
+  let [flagType, setFlagType] = useState("");
   function escFunction(event) {
     if (event.key === "Escape") {
       setFocused(false);
     }
   }
+  function submitReport() {
+    if(flagType != ""){
+      console.log(props.uploadID)
+      fetch(`https://node.asharalvany.com/flag/${props.uploadID}/${flagType}`)
+      .then(response => response.json())
+      .then((message)=>{
+        console.log(message)
+        props.setNotification(true)
+        props.setMessageValue(message == "Success" ? "Note Reported" : message)
+        setFlagType("")
+        setReport(false)
+      })
+    }
+  }
+  function flag(string) {
+    if (flagType == string) {
+      setFlagType("")
+    }
+    else {
+      setFlagType(string)
+    }
+  }
+  useEffect(() => {
+    if (!report) {
+      setFlagType("");
+    }
+  }, [report])
   useEffect(() => {
     document.addEventListener("keydown", escFunction, false);
     fetch(`https://node.asharalvany.com/getFile/${props.uploadID}`)
@@ -81,8 +113,27 @@ function CardResult(props) {
       }
       {
         focused && loaded ?
-          <div onClick={(e) => { e.stopPropagation(); setFocused(false) }} className='sr-fullScreenContainer'>
+          // onClick={(e) => { e.stopPropagation(); setFocused(false) }} 
+          <div className='sr-fullScreenContainer'>
             <img className='sr-fullScreenImage' src={image} />
+            <div className='sr-closeContainer'>
+              <CloseRoundedIcon onClick={(e) => { e.stopPropagation(); setFocused(false) }} sx={{ color: "#C67143", fontSize: "3rem", cursor: "pointer" }} />
+            </div>
+            <div className='sr-flagContainer'>
+              <OutlinedFlagRoundedIcon sx={{ color: "#C67143", fontSize: "3rem", cursor: "pointer" }} onClick={() => {
+                setReport(!report);
+              }} />
+            </div>
+            {report ?
+              <div className="sr-reportDropDown">
+                <div onClick={() => { flag("Spam") }} className={"sr-DropDownContent " + (flagType == "Spam" ? "sr-selected" : "")}>Spam</div>
+                <div onClick={() => { flag("Irrelevant") }} className={"sr-DropDownContent " + (flagType == "Irrelevant" ? "sr-selected" : "")}>Irrelevant Content</div>
+                <div onClick={() => { flag("Misinformation") }} className={"sr-DropDownContent " + (flagType == "Misinformation" ? "sr-selected" : "")}>Misinformation</div>
+                <div onClick={() => { flag("Sexual") }} className={"sr-DropDownContent " + (flagType == "Sexual" ? "sr-selected" : "")}>Sexual or Repulsive Content</div>
+                <div onClick={() => { submitReport() }} className={"sr-DropDownSubmit"}>Submit</div>
+              </div>
+              :
+              null}
           </div> :
           null
       }
@@ -94,6 +145,8 @@ function CardResult(props) {
 function SearchResults(props) {
   let inputRef = useRef();
   let [searchValue, setSearchValue] = useState(props.submitValue);
+  const [messageValue, setMessageValue] = useState();
+  const [notification, setNotification] = useState(false);
   let [classes, setClasses] = useState(false);
   let [uploadArray, setUploadArray] = useState([]);
   let [activeUploads, setActiveUploads] = useState([]);
@@ -104,7 +157,6 @@ function SearchResults(props) {
   let [placeholder, setPlaceholder] = useState();
   let [loading, setLoading] = useState(false);
   let [data, setData] = useState([]);
-  let [nothingFound, setNothingFound] = useState(false);
   useEffect(() => {
     fetch('https://node.asharalvany.com/searchFormat')
       .then((response) => response.json())
@@ -119,6 +171,10 @@ function SearchResults(props) {
     if (uploadArray.length > 0) {
       setActiveUploads((numberOfPages > activePage ? (uploadArray.slice(cardPerPage * (activePage - 1), (cardPerPage * (activePage - 1)) + cardPerPage)) : (uploadArray.slice(cardPerPage * (activePage - 1), uploadArray.length))));
     }
+    else{
+      setData([])
+      setLoading(false);
+    }
   }, [activePage, uploadArray, cardPerPage])
   useEffect(() => {
     fetch(`https://node.asharalvany.com/getFileInfo/${JSON.stringify(activeUploads)}`)
@@ -130,24 +186,16 @@ function SearchResults(props) {
   useEffect(() => {
     let temp = [];
     data.forEach(element => {
-      temp.push(<CardResult key={element["key"]} uploadID={element["key"]} title={element["class_name"]} tag={element["tags"]} />)
+      temp.push(<CardResult setMessageValue = {setMessageValue} setNotification={setNotification} key={element["key"]} uploadID={element["key"]} title={element["class_name"]} tag={element["tags"]} />)
     });
-    setCardArray(temp)
+    setCardArray(temp);
+    setLoading(false);
   }, [data])
-  useEffect(() => {
-    setLoading(false)
-    if (cardArray.length == 0) {
-      setNothingFound(true);
-    }
-    else {
-      setNothingFound(false);
-    }
-  }, [cardArray])
   useEffect(() => {
     console.log(`Search Value: ${searchValue}`);
     setLoading(true)
-    setNothingFound(false)
     setCardArray([])
+    setData([])
     if (searchValue != null) {
       fetch(`https://node.asharalvany.com/getUploadID/${searchValue["label"]}`)
         .then((response) => response.json())
@@ -247,7 +295,7 @@ function SearchResults(props) {
         {loading ?
           <loading-bounce style={{ transform: "translateY(-15vh)" }} size="60"></loading-bounce>
           :
-          !nothingFound ?
+          data.length > 0 ?
             <div className="sr-cardContainer">
               {cardArray}
             </div>
@@ -255,6 +303,14 @@ function SearchResults(props) {
             <div style={{ transform: "translateY(-15vh)", fontSize: "1.5rem", fontFamily: "Lato" }}>No notes found!</div>
         }
       </div>
+      {
+        notification ?
+          <motion.div animate={{ opacity: [0, 1, 1, 0], top: ["-5%", "5%", "5%", "-5%"] }} transition={{ duration: 4, times: [0, 0.2, 0.8, 1], ease: ["easeIn", "easeIn", "easeOut"] }} onAnimationComplete={() => setNotification(false)} className="notif">
+            {messageValue === "SUCCESS" ? "Successfully Uploaded!" : messageValue}
+          </motion.div>
+          :
+          null
+      }
     </div>
   );
 }
