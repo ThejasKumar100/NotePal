@@ -11,6 +11,7 @@ const search_format = require("../domains/search_format/controller");
 const upload = require("../domains/upload/controller");
 const get_uploads = require("../domains/get_uploads/controller");
 const set_flags = require("../domains/flag/controller");
+const get_flags = require("../domains/get_flags/controller");
 
 let box_auth_flag = false;
 let redirect = false;
@@ -43,6 +44,7 @@ router.get("/box_auth/:password", async (req, res) => {
 
 router.get("/box_redirect", async (req, res) => {
     let return_obj = await redirect_auth(box_auth_flag, redirect, req.query.code);
+    console.log(return_obj)
     if (return_obj.data.box_auth_flag != null) {
         box_auth_flag = false;
         redirect = true;
@@ -128,6 +130,12 @@ router.get("/flag/:uploadID/:flagType", async (req, res) => {
     let return_obj = await set_flags(redirect, req.params.uploadID, req.params.flagType);
     res.status(return_obj.status_code)
     res.send(return_obj.response);
+})
+
+router.get("/getFlags", async (req, res) => {
+    let return_obj = await get_flags(redirect, req.params.uploadID, req.params.flagType);
+    res.status(return_obj.status_code)
+    res.send(return_obj.data.flags);
 })
 
 module.exports = router

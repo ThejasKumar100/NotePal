@@ -11,7 +11,8 @@
     "express-fileupload": "^1.5.0",
     "express.js": "^1.0.0",
     "mysql": "^2.18.1",
-    "query-string": "^9.0.0"
+    "query-string": "^9.0.0",
+    "redis": "^4.6.15"
   },
   "scripts": {
     "start": "node -r dotenv/config src/index dotenv_config_path=env/local.env",

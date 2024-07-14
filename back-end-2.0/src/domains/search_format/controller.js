@@ -1,4 +1,32 @@
 const pool = require("../../config/db");
+const redis = require("../../config/redis");
+
+async function checkCache() {
+    await redis.connect();
+    try {
+        let response = await redis.get('searchFormat')
+        if (response) {
+            return JSON.parse(response);
+        }
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    } finally {
+        redis.disconnect();
+    }
+}
+
+async function addToCache(searchFormat) {
+    await redis.connect();
+    console.log(searchFormat.length);
+    redis.set('searchFormat', JSON.stringify(searchFormat), function (err, reply) {
+        if (err) console.log(err);
+        else console.log(reply)
+    }).then(() => {
+        redis.disconnect();
+    })
+}
 
 function retrieveTagNames() {
     return new Promise((res, rej) => {
@@ -39,6 +67,12 @@ function retrieveDistinctClasses() {
 async function search_format(redirect) {
     let return_obj = { data: {}, response: "", status_code: "" };
     if (redirect) {
+        let cache = await checkCache();
+        if (cache) {
+            return_obj.data.search_results = cache;
+            return_obj.status_code = 200;
+            return return_obj;
+        }
         let tag_names = await retrieveTagNames();
         let classes = await retrieveDistinctClasses();
         let formattedClasses = [];
@@ -53,6 +87,7 @@ async function search_format(redirect) {
             temp["label"] = element.tag_name;
             formattedClasses.push(temp)
         })
+        await addToCache(formattedClasses);
         return_obj.data.search_results = formattedClasses;
         return_obj.status_code = 200;
     }
