@@ -17,5 +17,8 @@
   "scripts": {
     "start": "node -r dotenv/config src/index dotenv_config_path=env/local.env",
     "dev": "nodemon -r dotenv/config src/index dotenv_config_path=env/local.env"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }

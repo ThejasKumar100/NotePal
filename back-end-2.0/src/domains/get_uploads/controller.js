@@ -74,10 +74,10 @@ function retrieveUploadIDFromTags(tag_name) {
 async function get_uploads(redirect, searchQuery) {
     let return_obj = { data: {}, response: "", status_code: "" };
     if (redirect) {
-        let upload_id;
-        try {
+        if (searchQuery !== searchQuery.toLowerCase()) {
             upload_id = await retrieveClassID(searchQuery.replaceAll("'", "\\'"));
-        } catch (error) {
+        }
+        else {
             upload_id = await retrieveUploadIDFromTags(searchQuery.replaceAll("'", "\\'"));
         }
         upload_id.forEach((element, i, arr) => {
