@@ -9,7 +9,7 @@ function retrieveClassInfo(upload_id) {
                 rej(err);
             }
             con.query(SQLquery, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else { res(results); }
             });
@@ -26,7 +26,7 @@ function retrieveTagInfo(upload_id) {
                 rej(err);
             }
             con.query(SQLquery, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else { res(results); }
             });

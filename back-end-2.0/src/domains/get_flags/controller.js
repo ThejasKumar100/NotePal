@@ -2,24 +2,24 @@ const pool = require("../../config/db");
 
 function get_flags_helper() {
 
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
         pool.getConnection((err, con) => {
             if (err) {
                 console.log(err);
                 rej(err);
             }
             con.query(`SELECT * FROM flagged;`, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
-                if (error) rej(error);
+                con.release();
+                if (error) reject(error);
                 else {
-                    res(results);
+                    resolve(results);
                 }
             });
         })
     })
 }
 
-async function get_flags(redirect, uploadID, flagType) {
+async function get_flags(redirect) {
     let return_obj = { data: {}, response: "", status_code: "" };
     if (redirect) {
         return_obj.data.flags = await get_flags_helper()

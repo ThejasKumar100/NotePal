@@ -9,7 +9,7 @@ function updateFlags(uploadID, flagType) {
                 rej(err);
             }
             con.query(`INSERT INTO flagged (upload_id, ${flagType}) VALUES (${uploadID}, 1) ON DUPLICATE KEY UPDATE ${flagType} = ${flagType} + 1`, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else {
                     res(true);

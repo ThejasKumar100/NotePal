@@ -1,4 +1,13 @@
 const pool = require("../../config/db");
+const redis = require("../../config/redis");
+
+async function clearCache() {
+    await redis.connect();
+    redis.del('searchFormat')
+    .then(() => {
+        redis.disconnect();
+    })
+}
 
 function retrieveTagNames() {
     return new Promise((res, rej) => {
@@ -8,7 +17,7 @@ function retrieveTagNames() {
                 rej(err);
             }
             con.query("SELECT * FROM tag_name", function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else {
                     res(results);
@@ -26,7 +35,7 @@ function updateTags(tagName) {
                 reject(err);
             }
             con.query(`INSERT INTO tag_name VALUES ('${tagName}');`, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) reject(error);
                 else {
                     resolve(results);
@@ -54,7 +63,7 @@ function checkExistence(coursePrefix, classNumber, section, instructor) {
                 reject(err);
             }
             con.query(SQLquery, function (error, results) {
-                con.release(err => err ? reject(err) : resolve(err));
+                con.release();
                 if (error) reject(error);
                 else {
                     console.log("results", results)
@@ -148,6 +157,7 @@ async function upload(redirect, params, files, client) {
                             }
                             con.query(SQLquery, function (error, results, fields) {
                                 console.log("DB Updated")
+                                clearCache();
                                 if (error) console.log(error);
                             })
                             return_obj.status_code = 200;

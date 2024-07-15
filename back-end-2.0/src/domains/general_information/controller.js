@@ -8,7 +8,7 @@ function retrieveTagNames() {
                 rej(err);
             }
             con.query("SELECT * FROM tag_name", function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else {
                     res(results);
@@ -26,7 +26,7 @@ function retrieveClassInfoUpload(string) {
           reject(err);
         }
         con.query(`SELECT DISTINCT ${string} FROM class;`, function (error, results) {
-          con.release(error => error ? reject(error) : resolve(error));
+          con.release();
           if (error) {
             console.log(error)
             reject(error);

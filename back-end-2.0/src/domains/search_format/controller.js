@@ -36,7 +36,7 @@ function retrieveTagNames() {
                 rej(err);
             }
             con.query("SELECT * FROM tag_name", function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else {
                     res(results);
@@ -54,7 +54,7 @@ function retrieveDistinctClasses() {
                 reject(err);
             }
             con.query("SELECT DISTINCT course_prefix, class_number, instructor FROM class ORDER BY term;", function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) reject(error);
                 else {
                     resolve(results);

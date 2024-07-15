@@ -13,7 +13,7 @@ function retrieveUploadID(ObjArray) {
                 rej(err);
             }
             con.query(SQLquery, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) {
                     rej(error);
                 }
@@ -34,7 +34,7 @@ function retrieveClassID(class_name) {
                 rej(err);
             }
             con.query(SQLquery, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else {
                     res(retrieveUploadID(results));
@@ -63,7 +63,7 @@ function retrieveUploadIDFromTags(tag_name) {
                 rej(err);
             }
             con.query(SQLquery, function (error, results) {
-                con.release(error => error ? reject(error) : resolve(error));
+                con.release();
                 if (error) rej(error);
                 else { res(results); }
             })
