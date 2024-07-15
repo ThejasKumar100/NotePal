@@ -5,7 +5,7 @@ NotePal is a note-sharing application for UTD, created and maintained by the The
 Note uploads will be monitored using image-detection ML algorithms to protect the system from explicit or non-relevant images.
 
 ### Architecture
-The front end is built using React.js, the APIs of the back-end are built using Node.js/Express.js and Flask, the ML model is built using PyTorch (Binary Classification Model using a pre-designed convolutional neural network that is trained on more than a million images from the ImageNet database[^\[1\]^](https://www.mathworks.com/help/deeplearning/ref/efficientnetb0.html) called efficientnet_b0), the image are stored in a "bucket" architecture (similar to an AWS S3 bucket) on the [Box](https://Box.com), and our data is organized in a SQL RDMS called MariaDB (community-developed, commercially supported fork of the MySQL[^\[2\]^](https://www2.computerworld.com.au/article/457551/dead_database_walking_mysql_creator_why_future_belongs_mariadb/)). The application servers are self-hosted and self-run.
+The front end is built using React.js, the APIs of the back-end are built using Node.js/Express.js and Flask, the ML model is built using PyTorch (Binary Classification Model using a pre-designed convolutional neural network that is trained on more than a million images from the ImageNet database[^\[1\]^](https://www.mathworks.com/help/deeplearning/ref/efficientnetb0.html) called efficientnet_b0), the images are stored in a "bucket" architecture (similar to an AWS S3 bucket) on the [Box](https://Box.com). Image metada is organized in an SQL RDMS called MariaDB (community-developed, commercially supported fork of the MySQL[^\[2\]^](https://www2.computerworld.com.au/article/457551/dead_database_walking_mysql_creator_why_future_belongs_mariadb/)) Additionally, the certain static information is cached using the redis platform. The application servers are self-hosted and self-run.
 
 ### Credits
 This project is the idea of Ashar Alvany, developed and expanded on by the NotePal Team at [Theta Tau Alpha](https://www.ttautd.com) (UTD Fraternity). The project's backend relies on an API developed by [UTD's Nebula Labs](https://www.utdnebula.com/). Finally, we are hoping to get the word out using [UTD Mercury](https://utdmercury.com/).
@@ -40,7 +40,10 @@ npm run dev
 
 ### Current Bugs
 
-- ~~Allows files of any size to be uploaded~~
-- ~~When uploading on mobile, the black glass does not extend the entire background of the pop-up~~
-- ~~On some mobile browsers, the text of the professor associated with an upload will appear visually cut-off~~
-- ~~Inputting a tag and pressing upload without the remainder of upload information (Professor (Optional), course prefix (Mandatory), and course number (Mandatory)) will cause the upload to hang when it should notify to the user that the input is incomplete~~  
+- The search results do not immediately update for a user if that user uploads a new tag that needs to be added to the possible search options
+
+### Future Features
+
+- (WIP) Machine Learning model to auto remove certain categories of non-relevant pictures
+- Creating a systematic approach to commenting/reacting to posted notes
+- Allow the uploading of PDF's (autoconversion on the backend?)
