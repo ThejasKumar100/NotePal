@@ -39,11 +39,11 @@ npm run dev
 ![alt text](read-me-images/image-3.png)
 
 ### Current Bugs
-
-- The search results do not immediately update for a user if that user uploads a new tag that needs to be added to the possible search options
+(For NotePal bugs, please contact thetatauutd@gmail.com)
+- The "No search results" message always shows before the API loads the search results in
 
 ### Future Features
-
+(For NotePal feature requests, please contact thetatauutd@gmail.com)
 - (WIP) Machine Learning model to auto remove certain categories of non-relevant pictures
 - Creating a systematic approach to commenting/reacting to posted notes
 - Allow the uploading of PDF's (autoconversion on the backend?)
