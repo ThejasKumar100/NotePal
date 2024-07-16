@@ -19,6 +19,7 @@
     "dev": "nodemon -r dotenv/config src/index dotenv_config_path=env/local.env"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "jest": "^29.7.0"
   }
 }
